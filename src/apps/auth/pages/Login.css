@@ -1,3 +1,308 @@
 .login {
-    background-color: var(--primary);
+  background-color: var(--primary);
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.login .ellipse {
+  background-color: var(--primaryLight);
+  border-radius: var(--radius-round);
+  height: 320px;
+  left: -80px;
+  opacity: 0.12;
+  position: absolute;
+  top: -80px;
+  width: 320px;
+  pointer-events: none;
+}
+
+.login .ellipse-1 {
+  background-color: var(--primaryLight);
+  border-radius: var(--radius-round);
+  height: 400px;
+  right: -100px;
+  opacity: 0.1;
+  position: absolute;
+  bottom: -60px;
+  width: 400px;
+  pointer-events: none;
+}
+
+.login .ellipse-2 {
+  background-color: var(--primaryLight);
+  border-radius: var(--radius-round);
+  height: 200px;
+  left: 100px;
+  opacity: 0.08;
+  position: absolute;
+  bottom: 100px;
+  width: 200px;
+  pointer-events: none;
+}
+
+.login .ellipse-3 {
+  background-color: var(--primaryLight);
+  border-radius: var(--radius-round);
+  height: 180px;
+  right: -30px;
+  opacity: 0.08;
+  position: absolute;
+  top: 80px;
+  width: 180px;
+  pointer-events: none;
+}
+
+.login .ellipse-4 {
+  background-color: var(--primaryLight);
+  border-radius: var(--radius-round);
+  height: 160px;
+  left: 40%;
+  opacity: 0.06;
+  position: absolute;
+  top: -60px;
+  width: 160px;
+  pointer-events: none;
+}
+
+.login-card {
+  background-color: var(--bgCard);
+  border-radius: var(--radius-badge);
+  width: 480px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.login-top {
+  background-color: var(--primaryDeep);
+  width: 100%;
+  height: 92px;
+  border-radius: 20px 20px 0px 0px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+
+.logo {
+  background-color: var(--primary);
+  border-radius: var(--radius-logo);
+  width: 44px;
+  height: 44px;
+  margin-left: 28px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-inner {
+  background-color: var(--primaryLight);
+  border-radius: var(--radius-progress);
+  width: 22px;
+  height: 22px;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  margin-left: 12px;
+}
+
+.logo-title {
+  color: white;
+  font-family: var(--font-family-bold);
+  font-size: 20px;
+  font-weight: var(--font-weight-bold);
+}
+
+.logo-comment {
+  color: var(--primaryLight);
+  font-family: var(--font-family-regular);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  margin-top: 2px;
+}
+
+.login-input-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+  margin-left: 40px;
+  margin-right: 40px;
+}
+
+.login-sub {
+  color: var(--textPrimary);
+  font-family: var(--font-family-bold);
+  font-size: var(--font-size-xxl);
+  font-weight: var(--font-weight-bold);
+}
+
+.input-comment {
+  color: var(--textSecondary);
+  font-family: var(--font-family-regular);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.login-input-field {
+  display: flex;
+  flex-direction: column;
+  padding-top: 8px;
+}
+
+.login-input-field > p,
+.login-input-field > div:first-child {
+  color: var(--textSecondary);
+  font-family: var(--font-family-medium);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding-bottom: 2px;
+}
+
+.login-input {
+  color: var(--textPrimary);
+  background-color: var(--bgPage);
+  border-radius: var(--radius-field);
+  border: 0.5px solid var(--border);
+  font-family: var(--font-family-regular);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  padding-left: 16px;
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+}
+
+.login-input::placeholder {
+  color: var(--textHint);
+}
+
+.login-input:focus {
+    outline: none;
+    border: none;
+}
+
+.login-bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.always-login {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.always-login > p {
+  color: var(--textSecondary);
+  font-family: var(--font-family-regular);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+}
+
+.find-pw {
+  color: var(--primaryMid);
+  font-family: var(--font-family-regular);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+  cursor: pointer;
+}
+
+.login-button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-button);
+  font-family: var(--font-family-bold);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  width: 100%;
+  height: 52px;
+  text-align: center;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.login-button:hover {
+  filter: brightness(0.9);
+}
+
+.login-button:active {
+  filter: brightness(0.8);
+}
+
+.or {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.or-line-left,
+.or-line-right {
+  flex: 1;
+  height: 1px;
+  background-color: var(--border);
+}
+
+.or-text {
+  color: var(--textHint);
+  font-family: var(--font-family-regular);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.joinus-button {
+  color: var(--primary);
+  background-color: var(--primaryLight);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-card);
+  font-family: var(--font-family-bold);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  width: 100%;
+  height: 52px;
+  margin-top: 12px;
+  margin-bottom: 16px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.joinus-button:hover {
+  filter: brightness(0.95);
+}
+
+.joinus-button:active {
+  filter: brightness(0.9);
+}
+
+.login-notice {
+  background-color: var(--bgPage);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius-button);
+  padding: 12px 15px;
+  margin-bottom: 24px;
+}
+
+.login-notice > p {
+  color: var(--textSecondary);
+  font-family: var(--font-family-regular);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
 }

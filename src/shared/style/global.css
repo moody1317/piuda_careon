@@ -55,11 +55,6 @@
 
     --gap-card: 8px;
     --gap-section: 80px;
-    
-    --height-button-web: 36px;
-    --height-button-app: 52px;
-    --height-input-web: 40px;
-    --height-input-app: 48px;
 
     --size-timeline: 22px;
     --size-table: 30px;
@@ -67,7 +62,9 @@
     --size-profile: 44px;
 
     /* font */
-    --font-family-base: "Noto Sans KR", -apple-system, sans-serif;
+    --font-family-regular: "Noto Sans KR-Regular", Helvetica;
+    --font-family-medium: "Noto Sans KR-Medium", Helvetica;
+    --font-family-bold: "Noto Sans KR-Bold", Helvetica;
 
     /* typography */
     --font-size-xxxs: 10px; /* 배지 텍스트, 축 레이블, 아주 작은 메타 정보 */
@@ -84,17 +81,7 @@
     --font-weight-regular: 400;
     --font-weight-medium: 500;
     --font-weight-bold: 700;
-
-    /* line-height */
-    --line-height-tight: 1.2; /* 숫자, 제목 */
-    --line-height-normal: 1.5; /* 본문 */
-    --line-height-relaxed: 1.7; /* STT 원문, 긴 설명 텍스트 */
-
-    /* border-width */
-    --border-width-default: 0.5px;
-    --border-width-emphasis: 1px;
-    --border-width-focus: 1.5px; /* 입력 필트 focus, accentCard active 상태) */
-
+    
     /* focus border */
     --focus-border: var(--primary);
 
