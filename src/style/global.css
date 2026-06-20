@@ -1,0 +1,141 @@
+:root {
+    /* primary */
+    --primary: #0F6E56;
+    --primaryDark: #085041;
+    --primaryDeep: #043328;
+    --primaryMid: #1D8E6E;
+    --primaryLight: #E1F5EE;
+    --sidebar: #073C31;
+    --sidebarDark: #042C23;
+
+    /* alert */
+    --alert: #D85A30;
+    --alertBg: #FAECE7;
+    --alertDark: #712B13;
+    --alertMid: #993C1D;
+
+    /* warning */
+    --warnMid: #BB7517;
+    --warnBg: #FAEEDA;
+    --warnDark: #633806;
+
+    /* info */
+    --blueMid: #185FA5;
+    --blueBg: #E6F0FB;
+    --blueText: #1245A5;
+
+    /* neutral */
+    --bgCard: #FFFFFF;
+    --bgPage: #F3F4F7;
+    --bgSecondary: #EFF0F3;
+    --textPrimary: #1A1A2E;
+    --textSecondary: #6B6D7C;
+    --textHint: #A5A6B1;
+    --border: #E0E1E7;
+    --overlay: rgba(16, 16, 32, 0.52);
+
+    /* border strong */
+    --borderStrong: #C7C8CC;
+
+    /* border radius */
+    --radius-badge: 20px; /* 배지 전용 */
+    --radius-modal: 16px; /* 모달 전용 (상담일지 상세 */
+    --radius-logo: 14px; /* 앱(모바일로고 마크 */
+    --radius-card: 12px; /* 메인 카드 전체(콘텐츠 카드, 테이블 카드 - 웹앱 공통 기본 값 */
+    --radius-field: 10px; /* 앱 입력 필드, 프로필 배너, 회원가입 역할 선택 버튼 */
+    --radius-button: 8px; /* 버튼, 웹 입력 필드, accent 카드, AI 요약박스, 소견박스, 로고 마크(웹 */
+    --radius-filter: 6px; /* 필터 버튼(소형, 연계서비스 태그 버튼 */
+    --radius-progress: 4px; /* 로고 마크 내부 아이콘 박스, progress bar */
+    --radius-round: 50%; /* 아바타, 타임라인 도트, 알람 배지(숫자 */
+
+    /* spacing & padding */
+    --spacing-page: 24px;
+    --spacing-card: 20px;
+    --spacing-list: 6px;
+
+    --gap-card: 8px;
+    --gap-section: 80px;
+    
+    --height-button-web: 36px;
+    --height-button-app: 52px;
+    --height-input-web: 40px;
+    --height-input-app: 48px;
+
+    --size-timeline: 22px;
+    --size-table: 30px;
+    --size-topbar: 36px;
+    --size-profile: 44px;
+
+    /* font */
+    --font-family-base: "Noto Sans KR", -apple-system, sans-serif;
+
+    /* typography */
+    --font-size-xxxs: 10px; /* 배지 텍스트, 축 레이블, 아주 작은 메타 정보 */
+    --font-size-xxs: 11px; /* 보조 설명, 날짜, 소속, 태그 설명, 카드 서브타이틀 */
+    --font-size-xs: 12px; /* 입력 필드 레이블, 테이블 헤더, 섹션 소제목 */
+    --font-size-sm: 13px; /* 리스 이름, 테이블 본문, 버튼 텍스트(웹, nav 메뉴 */
+    --font-size-md: 14px; /* 입력 필드 본문, 카드 소제목, 사이드바 로고명 */
+    --font-size-lg: 16px; /* 카드 섹션 제목, 버튼 텍스트(앱, 로그인 로고 */
+    --font-size-xl: 18px; /* topbar 페이지 제목, 설정 섹션 제목 */
+    --font-size-xxl: 22px;
+    --font-size-xxxl: 36px;
+
+    /* font-weight */
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-bold: 700;
+
+    /* line-height */
+    --line-height-tight: 1.2; /* 숫자, 제목 */
+    --line-height-normal: 1.5; /* 본문 */
+    --line-height-relaxed: 1.7; /* STT 원문, 긴 설명 텍스트 */
+
+    /* border-width */
+    --border-width-default: 0.5px;
+    --border-width-emphasis: 1px;
+    --border-width-focus: 1.5px; /* 입력 필트 focus, accentCard active 상태) */
+
+    /* focus border */
+    --focus-border: var(--primary);
+
+    /* z-index */
+    --z-dropdown: 100;
+    --z-modal-overlay: 900;
+    --z-modal: 1000;
+    --z-toast: 1100;
+
+    /* transition */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.2s ease;
+
+    /* shadow */
+    --shadow-focus: 0 0 0 3px rgba(15,110,86,0.2);
+
+    /* breakpoint */
+    --breakpoint-mobile: 480px;
+    --breakpoint-tablet: 768px;
+    --breakpoint-desktop: 1280px;
+
+    /* toggle */
+    --toggle-on: var(--primary);
+    --toggle-off: #C7C8CC;
+    --toggle-disabled: #E5E5E8;
+
+    /* hover/active */
+    --primary-hover: #0D5F49;
+    --alert-hover: #C04E28;
+    --warn-hover: #A56713;
+    --primary-active: #094030;
+
+    /* disabled */
+    --disabled-bg: #F1F1F3;
+    --disabled-text: #B5B6BD;
+    --disabled-border: #E5E5E8;
+    
+    /* nav / select */
+    --nav-active-overlay: rgba(255,255,255,0.1);
+    --chip-active-bg: var(--primary);
+    --chip-active-text: var(--bgCard);
+    --chip-inactive-bg: var(--bgCard);
+    --chip-inactive-text: var(--textSecondary);
+}
