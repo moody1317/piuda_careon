@@ -268,6 +268,25 @@
   font-weight: var(--font-weight-bold);
 }
 
+.jn-success-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: var(--primaryLight);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius-button);
+  padding: 12px 16px;
+  color: var(--primary);
+  font-family: var(--font-family-medium);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.jn-success-banner i {
+  font-size: var(--font-size-md);
+  flex-shrink: 0;
+}
+
 .jn-field {
   display: flex;
   flex-direction: column;
