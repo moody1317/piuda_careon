@@ -60,7 +60,7 @@ function Login() {
                     <p className="or-text">또는</p>
                     <div className="or-line-right" />
                 </div>
-                <button className='joinus-button'>계정이 없으신가요?&nbsp;&nbsp;회원가입</button>
+                <button className='joinus-button' onClick={() => navigate('/joinus')}>계정이 없으신가요?&nbsp;&nbsp;회원가입</button>
                 <div className="login-notice">
                     <p>기관 코드는 소속 기관 관리자에게 문의하세요.</p>
                 </div>

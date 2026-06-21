@@ -11,7 +11,7 @@ function FindPWHeader() {
             </div>
             <div className="findpw-logo-text">
                 <p className="findpw-logo-title">돌봄ON</p>
-                <p className="findpw-logo-comment">기관 관리자 포털</p>
+                <p className="findpw-logo-comment">AI 기반 재가 노인 돌봄 지원 시스템</p>
             </div>
         </div>
     );
