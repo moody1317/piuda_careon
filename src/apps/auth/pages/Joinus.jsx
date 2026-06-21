@@ -84,6 +84,18 @@ function JoinUs() {
     special: /[^a-zA-Z0-9]/.test(pw),
   };
 
+  const formatPhone = (value) => {
+    const digits = value.replace(/\D/g, '').slice(0, 11);
+    if (digits.startsWith('02')) {
+      if (digits.length <= 2) return digits;
+      if (digits.length <= 6) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+      return `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6)}`;
+    }
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+  };
+
   const goNext = (from) => {
     setCompleted(prev => [...new Set([...prev, from])]);
     setStep(from + 1);
@@ -224,7 +236,7 @@ function JoinUs() {
                       className="jn-input"
                       placeholder="010-0000-0000"
                       value={phone}
-                      onChange={e => setPhone(e.target.value)}
+                      onChange={e => setPhone(formatPhone(e.target.value))}
                     />
                   </div>
                 </div>
