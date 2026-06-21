@@ -1,0 +1,253 @@
+.findpw-header {
+    background-color: var(--primaryDeep);
+    width: 100%;
+    height: 92px;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.findpw-logo {
+    background-color: var(--primary);
+    border-radius: var(--radius-logo);
+    width: 44px;
+    height: 44px;
+    margin-left: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.findpw-logo-inner {
+    background-color: var(--primaryLight);
+    border-radius: var(--radius-progress);
+    width: 22px;
+    height: 22px;
+}
+
+.findpw-logo-text {
+    display: flex;
+    flex-direction: column;
+    margin-left: 12px;
+}
+
+.findpw-logo-title {
+    color: white;
+    font-family: var(--font-family-bold);
+    font-size: 20px;
+    font-weight: var(--font-weight-bold);
+}
+
+.findpw-logo-comment {
+    color: var(--primaryLight);
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-regular);
+    margin-top: 2px;
+}
+
+.findpw-body {
+    display: flex;
+    flex-direction: column;
+    margin: 20px 40px 28px;
+}
+
+.findpw-title {
+    color: var(--textPrimary);
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-xxl);
+    font-weight: var(--font-weight-bold);
+}
+
+.findpw-subtitle {
+    color: var(--textSecondary);
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-regular);
+    margin-top: 4px;
+    line-height: 1.55;
+}
+
+.findpw-field {
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+}
+
+.findpw-label {
+    color: var(--textSecondary);
+    font-family: var(--font-family-medium);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    padding-bottom: 4px;
+}
+
+.findpw-input {
+    color: var(--textPrimary);
+    background-color: var(--bgPage);
+    border-radius: var(--radius-field);
+    border: 0.5px solid var(--border);
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-regular);
+    padding-left: 16px;
+    width: 100%;
+    height: 48px;
+    box-sizing: border-box;
+}
+
+.findpw-input::placeholder {
+    color: var(--textHint);
+}
+
+.findpw-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.findpw-btn-primary {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-button);
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    width: 100%;
+    height: 52px;
+    cursor: pointer;
+    margin-top: 16px;
+}
+
+.findpw-btn-primary:hover { filter: brightness(0.9); }
+.findpw-btn-primary:active { filter: brightness(0.8); }
+
+.findpw-btn-secondary {
+    background-color: var(--bgPage);
+    color: var(--textPrimary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-button);
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    width: 100%;
+    height: 52px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.findpw-btn-secondary:hover { filter: brightness(0.96); }
+
+.findpw-notice {
+    background-color: var(--primaryLight);
+    border-left: 3px solid var(--primary);
+    border-radius: var(--radius-button);
+    padding: 12px 15px;
+    margin-top: 16px;
+}
+
+.findpw-notice > p {
+    color: var(--primaryMid);
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
+    line-height: 1.6;
+}
+
+.findpw-link {
+    color: var(--primaryMid);
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-sm);
+    text-align: center;
+    cursor: pointer;
+    margin-top: 18px;
+}
+
+.otp-wrapper {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.otp-box {
+    width: 52px;
+    height: 62px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background-color: var(--bgPage);
+    text-align: center;
+    font-family: var(--font-family-bold);
+    font-size: 24px;
+    color: var(--textPrimary);
+    outline: none;
+    transition: border-color var(--transition-fast);
+}
+
+.otp-box:focus {
+    border-color: var(--primary);
+    background-color: var(--bgCard);
+}
+
+.otp-box--filled {
+    background-color: var(--textPrimary);
+    color: white;
+    border-color: var(--textPrimary);
+}
+
+.otp-timer {
+    color: var(--alert);
+    font-family: var(--font-family-medium);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-align: center;
+    margin-top: 10px;
+}
+
+.pw-match-msg {
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xs);
+    margin-top: 5px;
+}
+
+.pw-match--ok { color: var(--primary); }
+.pw-match--fail { color: var(--alert); }
+
+.pw-checks {
+    background-color: var(--bgPage);
+    border-radius: var(--radius-field);
+    padding: 14px 16px;
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pw-check-row {
+    display: flex;
+}
+
+.pw-check-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+}
+
+.pw-check-item i {
+    color: var(--textHint);
+    font-size: var(--font-size-md);
+    transition: color var(--transition-fast);
+}
+
+.pw-check-item span {
+    color: var(--textSecondary);
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-sm);
+}
+
+.pw-check--ok {
+    color: var(--primary) !important;
+}
