@@ -2,6 +2,11 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './apps/auth/pages/Login';
 import FindPW from './apps/auth/pages/Findpw';
 import JoinUs from './apps/auth/pages/Joinus';
+import AdminLayout from './apps/admin-dashboard/AdminLayout';
+import Dashboard from './apps/admin-dashboard/pages/Dashboard';
+import Risk from './apps/admin-dashboard/pages/Risk';
+import Caregiver from './apps/admin-dashboard/pages/Caregiver';
+import Counseling from './apps/admin-dashboard/pages/Counseling';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './shared/style/global.css';
 
@@ -12,6 +17,15 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/find-password" element={<FindPW />} />
         <Route path="/joinus" element={<JoinUs />} />
+        <Route path="/dashboard" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="risk" element={<Risk />} />
+          <Route path="counseling" element={<Counseling />} />
+          <Route path="symptom" element={<div />} />
+          <Route path="caregiver" element={<Caregiver />} />
+          <Route path="statistics" element={<div />} />
+          <Route path="settings" element={<div />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )

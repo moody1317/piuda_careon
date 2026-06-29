@@ -1,0 +1,279 @@
+.cg-page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cg-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.cg-stat-card {
+    background: var(--bgCard);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+}
+
+.cg-stat-card--alert {
+    border-left: 3px solid var(--alert);
+    padding-left: 22px;
+}
+
+.cg-stat-label {
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xs);
+    color: var(--textSecondary);
+    margin-bottom: 8px;
+}
+
+.cg-stat-value {
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-xxxl);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+}
+
+.cg-stat-value--primary { color: var(--primary); }
+.cg-stat-value--alert   { color: var(--alert); }
+
+.cg-main {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.cg-card {
+    background: var(--bgCard);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--border);
+    padding: var(--spacing-card);
+}
+
+.cg-card-title {
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--textPrimary);
+    margin-bottom: 16px;
+}
+
+.cg-person {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.cg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-round);
+    background: var(--primaryLight);
+    color: var(--primary);
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-xxxs);
+    font-weight: var(--font-weight-bold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.cg-avatar--lg {
+    width: 44px;
+    height: 44px;
+    font-size: var(--font-size-sm);
+}
+
+.cg-name-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.cg-name {
+    font-family: var(--font-family-medium);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--textPrimary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cg-sub {
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xxs);
+    color: var(--textHint);
+    margin-top: 2px;
+}
+
+.cg-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.cg-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--bgSecondary);
+}
+
+.cg-row:last-child {
+    border-bottom: none;
+}
+
+.cg-person {
+    width: 120px;
+    flex-shrink: 0;
+}
+
+.cg-bar-group {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cg-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--bgSecondary);
+    border-radius: var(--radius-progress);
+    overflow: hidden;
+}
+
+.cg-bar-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: var(--radius-progress);
+}
+
+.cg-rate {
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xs);
+    color: var(--textSecondary);
+    width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.cg-badge {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-family-medium);
+    font-size: var(--font-size-xxs);
+    font-weight: var(--font-weight-medium);
+    padding: 3px 10px;
+    border-radius: var(--radius-badge);
+    flex-shrink: 0;
+    width: 56px;
+    justify-content: center;
+}
+
+.cg-badge--alarm { background: var(--alertBg); color: var(--alertMid); }
+.cg-badge--ok    { background: var(--primaryLight); color: var(--primary); }
+
+.cg-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bgPage);
+    border-radius: var(--radius-button);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+
+.cg-profile-name {
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--textPrimary);
+}
+
+.cg-profile-sub {
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xxs);
+    color: var(--textSecondary);
+    margin-top: 4px;
+}
+
+.cg-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.cg-mini-stat {
+    background: var(--bgPage);
+    border-radius: var(--radius-button);
+    padding: 12px 14px;
+}
+
+.cg-mini-label {
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xxs);
+    color: var(--textSecondary);
+    margin-bottom: 6px;
+}
+
+.cg-mini-value {
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-xxl);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+}
+
+.cg-mini-value--primary { color: var(--primary); }
+.cg-mini-value--dark    { color: var(--textPrimary); }
+.cg-mini-value--alert   { color: var(--alert); }
+
+.cg-section-sub {
+    font-family: var(--font-family-medium);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--textPrimary);
+    margin-bottom: 10px;
+}
+
+.cg-patient-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cg-patient-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: var(--radius-button);
+    transition: background-color var(--transition-fast);
+}
+
+.cg-patient-row:hover {
+    background: var(--bgPage);
+}
+
+.cg-patient-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-family-medium);
+    font-size: var(--font-size-xxs);
+    font-weight: var(--font-weight-medium);
+    padding: 3px 10px;
+    border-radius: var(--radius-badge);
+    flex-shrink: 0;
+}
+
+.cg-patient-badge--alert { background: var(--alertBg); color: var(--alertMid); }
+.cg-patient-badge--done  { background: var(--primaryLight); color: var(--primary); }
+.cg-patient-badge--plan  { background: var(--bgSecondary); color: var(--textSecondary); }

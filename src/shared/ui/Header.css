@@ -1,0 +1,97 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+    padding: 0 var(--spacing-page);
+    background-color: var(--bgCard);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.header-title {
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--textPrimary);
+    line-height: 1.2;
+}
+
+.header-subtitle {
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xxs);
+    font-weight: var(--font-weight-regular);
+    color: var(--textSecondary);
+    margin-top: 3px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-bell {
+    position: relative;
+    width: var(--size-topbar);
+    height: var(--size-topbar);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: var(--radius-button);
+    background-color: transparent;
+    color: var(--textSecondary);
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.header-bell:hover {
+    background-color: var(--bgSecondary);
+    color: var(--textPrimary);
+}
+
+.header-bell-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    background-color: var(--alert);
+    color: white;
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-xxxs);
+    font-weight: var(--font-weight-bold);
+    border-radius: var(--radius-round);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.header-admin {
+    height: var(--size-topbar);
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-button);
+    background-color: var(--bgCard);
+    font-family: var(--font-family-medium);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--textPrimary);
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.header-admin:hover {
+    background-color: var(--bgSecondary);
+    border-color: var(--borderStrong);
+}
