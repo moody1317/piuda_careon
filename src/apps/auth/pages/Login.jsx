@@ -54,7 +54,7 @@ function Login() {
                     </div>
                     <p className="find-pw" onClick={() => navigate('/find-password')}>비밀번호 찾기</p>
                 </div>
-                <button className="login-button">로그인</button>
+                <button className="login-button" onClick={() => navigate('/dashboard')}>로그인</button>
                 <div className='or'>
                     <div className="or-line-left" />
                     <p className="or-text">또는</p>
