@@ -27,22 +27,22 @@ function Risk() {
         <div className="risk-page">
 
             <div className="risk-stats">
-                <div className="r-stat-card r-stat-card--alert">
+                <div className="r-stat-card">
                     <p className="r-stat-label">이번 주 위험군</p>
                     <p className="r-stat-value r-stat-value--alert">8</p>
                     <p className="r-stat-sub">즉시 확인 필요</p>
                 </div>
-                <div className="r-stat-card r-stat-card--alert">
+                <div className="r-stat-card">
                     <p className="r-stat-label">긴급</p>
                     <p className="r-stat-value r-stat-value--alert">3</p>
                     <p className="r-stat-sub">당일 개입 권고</p>
                 </div>
-                <div className="r-stat-card r-stat-card--warn">
+                <div className="r-stat-card">
                     <p className="r-stat-label">주의</p>
                     <p className="r-stat-value r-stat-value--warn">5</p>
                     <p className="r-stat-sub">정기 모니터링</p>
                 </div>
-                <div className="r-stat-card r-stat-card--primary">
+                <div className="r-stat-card">
                     <p className="r-stat-label">해제 예정</p>
                     <p className="r-stat-value r-stat-value--primary">2</p>
                     <p className="r-stat-sub">상태 개선 확인</p>

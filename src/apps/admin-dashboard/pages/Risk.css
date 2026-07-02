@@ -13,14 +13,9 @@
 .r-stat-card {
     background: var(--bgCard);
     border-radius: var(--radius-card);
-    border: 1px solid var(--border);
-    border-left-width: 3px;
+    border: none;
     padding: 20px 24px 20px 22px;
 }
-
-.r-stat-card--alert   { border-left-color: var(--alert); }
-.r-stat-card--warn    { border-left-color: var(--warnMid); }
-.r-stat-card--primary { border-left-color: var(--primary); }
 
 .r-stat-label {
     font-family: var(--font-family-regular);
