@@ -75,7 +75,7 @@ const RECORDS = [
     },
 ];
 
-const FILTERS = ['전체', '특이사항 있음', '오늘', '이번 주', '긴급만'];
+const FILTERS = ['전체', '특이사항', '검토 필요', '정상'];
 
 function statusMod(status) {
     if (status === '특이사항') return 'alert';
@@ -85,17 +85,20 @@ function statusMod(status) {
 
 function Counseling() {
     const [query, setQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('전체');
     const [modalRecord, setModalRecord] = useState(null);
 
-    const filtered = query.trim()
-        ? RECORDS.filter(r => {
-            const q = query.trim().toLowerCase();
-            return (
-                r.name.toLowerCase().includes(q) ||
-                r.tags.some(tag => tag.toLowerCase().includes(q))
-            );
-        })
-        : RECORDS;
+    let filtered = statusFilter === '전체'
+        ? RECORDS
+        : RECORDS.filter(r => r.status === statusFilter);
+
+    if (query.trim()) {
+        const q = query.trim().toLowerCase();
+        filtered = filtered.filter(r =>
+            r.name.toLowerCase().includes(q) ||
+            r.tags.some(tag => tag.toLowerCase().includes(q))
+        );
+    }
 
     return (
         <>
@@ -103,10 +106,11 @@ function Counseling() {
 
             <div className="cl-filter-bar">
                 <div className="cl-filter-btns">
-                    {FILTERS.map((f, i) => (
+                    {FILTERS.map(f => (
                         <button
                             key={f}
-                            className={`cl-filter-btn${i === 1 ? ' cl-filter-btn--active' : ''}`}
+                            className={`cl-filter-btn${f === statusFilter ? ' cl-filter-btn--active' : ''}`}
+                            onClick={() => setStatusFilter(f)}
                         >
                             {f}
                         </button>

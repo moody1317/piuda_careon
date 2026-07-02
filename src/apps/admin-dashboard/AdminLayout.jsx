@@ -8,7 +8,6 @@ const ADMIN_MENUS = [
     { label: '대시보드 홈',    path: '/dashboard' },
     { label: '위험군 관리',    path: '/dashboard/risk' },
     { label: '상담일지 목록',  path: '/dashboard/counseling' },
-    { label: '이상징후 분석',  path: '/dashboard/symptom' },
     { label: '생활지원사 관리', path: '/dashboard/caregiver' },
     { label: '통계 및 리포트', path: '/dashboard/statistics' },
     { label: '설정',           path: '/dashboard/settings' },

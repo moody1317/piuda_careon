@@ -1,17 +1,18 @@
+import { useState } from 'react';
 import './Caregiver.css';
 
 const CAREGIVERS = [
-    { avatar: '김민', name: '김민지', count: 14, rate: 86,  alarm: 2 },
-    { avatar: '이성', name: '이성희', count: 13, rate: 85,  alarm: 1 },
-    { avatar: '박지', name: '박지수', count: 15, rate: 100, alarm: 0 },
-    { avatar: '최수', name: '최수진', count: 12, rate: 92,  alarm: 0 },
-    { avatar: '한미', name: '한미래', count: 14, rate: 93,  alarm: 1 },
-    { avatar: '정하', name: '정하늘', count: 11, rate: 100, alarm: 0 },
-    { avatar: '오은', name: '오은지', count: 13, rate: 92,  alarm: 0 },
-    { avatar: '강다', name: '강다은', count: 14, rate: 100, alarm: 0 },
-    { avatar: '윤하', name: '윤하준', count: 12, rate: 83,  alarm: 1 },
-    { avatar: '임수', name: '임수진', count: 13, rate: 92,  alarm: 0 },
-    { avatar: '백지', name: '백지훈', count: 11, rate: 100, alarm: 0 },
+    { avatar: '김민', name: '김민지', count: 14, rate: 86,  alarm: 2, years: 3 },
+    { avatar: '이성', name: '이성희', count: 13, rate: 85,  alarm: 1, years: 4 },
+    { avatar: '박지', name: '박지수', count: 15, rate: 100, alarm: 0, years: 2 },
+    { avatar: '최수', name: '최수진', count: 12, rate: 92,  alarm: 0, years: 5 },
+    { avatar: '한미', name: '한미래', count: 14, rate: 93,  alarm: 1, years: 3 },
+    { avatar: '정하', name: '정하늘', count: 11, rate: 100, alarm: 0, years: 6 },
+    { avatar: '오은', name: '오은지', count: 13, rate: 92,  alarm: 0, years: 4 },
+    { avatar: '강다', name: '강다은', count: 14, rate: 100, alarm: 0, years: 7 },
+    { avatar: '윤하', name: '윤하준', count: 12, rate: 83,  alarm: 1, years: 2 },
+    { avatar: '임수', name: '임수진', count: 13, rate: 92,  alarm: 0, years: 3 },
+    { avatar: '백지', name: '백지훈', count: 11, rate: 100, alarm: 0, years: 5 },
 ];
 
 const DETAIL_PATIENTS = [
@@ -30,6 +31,9 @@ function patientBadgeClass(type) {
 }
 
 function Caregiver() {
+    const [selected, setSelected] = useState(CAREGIVERS[0]);
+    const visited = Math.round(selected.count * selected.rate / 100);
+
     return (
         <div className="cg-page">
 
@@ -46,7 +50,7 @@ function Caregiver() {
                     <p className="cg-stat-label">방문 완료율</p>
                     <p className="cg-stat-value cg-stat-value--primary">88%</p>
                 </div>
-                <div className="cg-stat-card cg-stat-card--alert">
+                <div className="cg-stat-card">
                     <p className="cg-stat-label">알림 발생</p>
                     <p className="cg-stat-value cg-stat-value--alert">3명</p>
                 </div>
@@ -57,7 +61,11 @@ function Caregiver() {
                     <p className="cg-card-title">생활지원사 목록</p>
                     <div className="cg-list">
                         {CAREGIVERS.map((cg, i) => (
-                            <div key={i} className="cg-row">
+                            <div
+                                key={i}
+                                className={`cg-row${cg.name === selected.name ? ' cg-row--active' : ''}`}
+                                onClick={() => setSelected(cg)}
+                            >
                                 <div className="cg-person">
                                     <span className="cg-avatar">{cg.avatar}</span>
                                     <div className="cg-name-group">
@@ -84,25 +92,29 @@ function Caregiver() {
                     <p className="cg-card-title">생활지원사 상세</p>
 
                     <div className="cg-profile">
-                        <span className="cg-avatar cg-avatar--lg">김민</span>
+                        <span className="cg-avatar cg-avatar--lg">{selected.avatar}</span>
                         <div>
-                            <p className="cg-profile-name">김민지 생활지원사</p>
-                            <p className="cg-profile-sub">담당 14명 · 근무 3년차 · 알림 2건</p>
+                            <p className="cg-profile-name">{selected.name} 생활지원사</p>
+                            <p className="cg-profile-sub">
+                                담당 {selected.count}명 · 근무 {selected.years}년차 · {selected.alarm > 0 ? `알림 ${selected.alarm}건` : '알림 없음'}
+                            </p>
                         </div>
                     </div>
 
                     <div className="cg-mini-stats">
                         <div className="cg-mini-stat">
                             <p className="cg-mini-label">이번 주 방문</p>
-                            <p className="cg-mini-value cg-mini-value--primary">12/14</p>
+                            <p className="cg-mini-value cg-mini-value--primary">{visited}/{selected.count}</p>
                         </div>
                         <div className="cg-mini-stat">
                             <p className="cg-mini-label">상담일지</p>
-                            <p className="cg-mini-value cg-mini-value--dark">12건</p>
+                            <p className="cg-mini-value cg-mini-value--dark">{visited}건</p>
                         </div>
                         <div className="cg-mini-stat">
                             <p className="cg-mini-label">미해결 알림</p>
-                            <p className="cg-mini-value cg-mini-value--alert">2건</p>
+                            <p className={`cg-mini-value ${selected.alarm > 0 ? 'cg-mini-value--alert' : 'cg-mini-value--primary'}`}>
+                                {selected.alarm}건
+                            </p>
                         </div>
                     </div>
 

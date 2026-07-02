@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import './Risk.css';
+import RiskModal from './RiskModal';
 
 const RISK_ROWS = [
     { avatar: '박영', name: '박영희', age: 77, symptom: '식사거부 3주·우울감 표현 증가', manager: '김민지', date: '05.26', status: '긴급', score: 92 },
@@ -18,7 +20,10 @@ function scoreType(score) {
 }
 
 function Risk() {
+    const [modalRecord, setModalRecord] = useState(null);
+
     return (
+        <>
         <div className="risk-page">
 
             <div className="risk-stats">
@@ -96,7 +101,7 @@ function Risk() {
                                         </div>
                                     </td>
                                     <td>
-                                        <button className="btn-case">케이스 보기</button>
+                                        <button className="btn-case" onClick={() => setModalRecord(row)}>케이스 보기</button>
                                     </td>
                                 </tr>
                             );
@@ -105,6 +110,14 @@ function Risk() {
                 </table>
             </div>
         </div>
+
+        {modalRecord && (
+            <RiskModal
+                record={modalRecord}
+                onClose={() => setModalRecord(null)}
+            />
+        )}
+        </>
     );
 }
 

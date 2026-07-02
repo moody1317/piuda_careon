@@ -25,8 +25,8 @@ const SERIES = [
     { label: '반복 발화',   color: '#185FA5', values: [1, 1, 3, 3, 3, 3, 4, 5] },
 ];
 
-const SVG_W = 960, SVG_H = 200;
-const PAD   = { l: 32, r: 20, t: 24, b: 40 };
+const SVG_W = 960, SVG_H = 246;
+const PAD   = { l: 32, r: 20, t: 70, b: 40 };
 const CW    = SVG_W - PAD.l - PAD.r;
 const CH    = SVG_H - PAD.t - PAD.b;
 const GRID_Y = [0, 2, 4, 6, 8, 10];
@@ -37,7 +37,7 @@ const pts  = (values) => values.map((v, i) => `${toX(i)},${toY(v)}`).join(' ');
 
 function LineChart() {
     const calloutX = toX(5) + 14;
-    const calloutY = toY(9.5);
+    const calloutY = 12;
 
     return (
         <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} width="100%" style={{ display: 'block', overflow: 'visible' }}>
@@ -89,7 +89,7 @@ function Dashboard() {
                     <p className="stat-value stat-value--primary">142</p>
                     <p className="stat-sub">전월 대비 +3명</p>
                 </div>
-                <div className="stat-card stat-card--alert">
+                <div className="stat-card">
                     <p className="stat-label">이번 주 위험군</p>
                     <p className="stat-value stat-value--alert">8</p>
                     <p className="stat-sub">즉시 확인 필요</p>

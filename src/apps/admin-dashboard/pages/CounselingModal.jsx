@@ -1,4 +1,5 @@
 import './CounselingModal.css';
+import useLockBodyScroll from '../../../shared/hooks/useLockBodyScroll';
 
 const STATIC_STT = `어르신 요즘 밥은 좀 드세요? 밥이 영 입에 안 맞아요. 어제도 조금밖에 못 먹었어요. 왜 그리세요? 그냥 입맛이 없고 혼자 먹으니까 재미없어요. 자식들이 바쁘니까요. 혈압은 재봤어요? 오늘 아침 120에 80이었어요. 약은 잘 챙기고 있죠? 네 약은 잘 챙겨요.`;
 
@@ -18,6 +19,8 @@ const CHANGES = [
 const STATIC_OPINION = `식사 거부와 외로움 표현 동시 증가. 가족 연락 및 지역사회 연계 프로그램 참여 검토 권고.`;
 
 function CounselingModal({ record, onClose }) {
+    useLockBodyScroll();
+
     return (
         <div className="cm-overlay" onClick={onClose}>
             <div className="cm-modal" onClick={e => e.stopPropagation()}>

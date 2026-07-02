@@ -17,11 +17,6 @@
     padding: 20px 24px;
 }
 
-.stat-card--alert {
-    border-left: 3px solid var(--alert);
-    padding-left: 22px;
-}
-
 .stat-label {
     font-family: var(--font-family-regular);
     font-size: var(--font-size-xs);
@@ -52,6 +47,8 @@
     border-radius: var(--radius-card);
     border: 1px solid var(--border);
     padding: var(--spacing-card);
+    display: flex;
+    flex-direction: column;
 }
 
 .section-title {
@@ -169,7 +166,9 @@
 .tag-list {
     display: flex;
     flex-direction: column;
+    flex: 1;
     gap: 14px;
+    justify-content: space-between;
 }
 
 .tag-row {

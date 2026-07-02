@@ -35,7 +35,7 @@ function Sidebar({menus = []}) {
                 <div className='sidebar-line' />
                 <div className='sidebar-user'>
                     <div className='sidebar-user-img'>
-                        '김'
+                        김
                     </div>
                     <div className='sidebar-user-profile'>
                         <p className='sidebar-user-name'>김관리자</p>
