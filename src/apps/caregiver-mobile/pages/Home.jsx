@@ -19,6 +19,8 @@ const STATUS_LABEL = {
 
 function Home() {
     const navigate = useNavigate();
+    const totalVisits = VISITS.length;
+    const alertVisits = VISITS.filter((visit) => visit.status === 'alert').length;
 
     return (
         <div className="cg-visit">
@@ -27,11 +29,11 @@ function Home() {
             <PageHeader title="오늘의 방문 일정" subtitle="2026년 5월 26일 화요일 · 김민지 생활지원사">
                 <div className="cg-visit-stats">
                     <div className="cg-visit-stat">
-                        <p className="cg-visit-stat-value">8</p>
+                        <p className="cg-visit-stat-value">{totalVisits}</p>
                         <p className="cg-visit-stat-label">오늘 방문 예정</p>
                     </div>
                     <div className="cg-visit-stat">
-                        <p className="cg-visit-stat-value">1</p>
+                        <p className="cg-visit-stat-value">{alertVisits}</p>
                         <p className="cg-visit-stat-label">특이사항 알림</p>
                     </div>
                 </div>

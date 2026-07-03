@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
@@ -37,6 +38,8 @@ const POLICIES = [
 ];
 
 function PrivacyNotice() {
+    const navigate = useNavigate();
+
     return (
         <div className="cg-privacy">
             <StatusBar />
@@ -73,6 +76,10 @@ function PrivacyNotice() {
                     <span>개인정보처리방침 전문 보기</span>
                     <i className="bi bi-chevron-right" />
                 </div>
+
+                <button className="cg-privacy-back-button" type="button" onClick={() => navigate(-1)}>
+                    돌아가기
+                </button>
             </div>
 
             <BottomMenu />
