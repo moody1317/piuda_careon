@@ -1,0 +1,20 @@
+.cg-page-header {
+    background-color: var(--primaryDark);
+    padding: calc(env(safe-area-inset-top) + var(--size-topbar) + 20px) var(--spacing-page) 40px;
+    box-sizing: border-box;
+}
+
+.cg-page-header-title {
+    color: #FFFFFF;
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+}
+
+.cg-page-header-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-regular);
+    margin-top: 4px;
+}

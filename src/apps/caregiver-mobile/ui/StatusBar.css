@@ -1,0 +1,30 @@
+.cg-status-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--size-topbar);
+    padding: env(safe-area-inset-top) 20px 0;
+    box-sizing: content-box;
+    background-color: var(--primaryDark);
+    color: #FFFFFF;
+    z-index: var(--z-dropdown);
+}
+
+.cg-status-bar-time {
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: #FFFFFF;
+}
+
+.cg-status-bar-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--font-size-md);
+    color: #FFFFFF;
+}

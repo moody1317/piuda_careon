@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Login from './apps/auth/pages/Login';
-import FindPW from './apps/auth/pages/Findpw';
-import JoinUs from './apps/auth/pages/Joinus';
+import Login from './apps/admin-dashboard/auth/pages/Login';
+import FindPW from './apps/admin-dashboard/auth/pages/Findpw';
+import JoinUs from './apps/admin-dashboard/auth/pages/Joinus';
 import AdminLayout from './apps/admin-dashboard/AdminLayout';
 import Dashboard from './apps/admin-dashboard/pages/Dashboard';
 import Risk from './apps/admin-dashboard/pages/Risk';
@@ -9,8 +9,9 @@ import Caregiver from './apps/admin-dashboard/pages/Caregiver';
 import Counseling from './apps/admin-dashboard/pages/Counseling';
 import Statistics from './apps/admin-dashboard/pages/Statistics';
 import Settings from './apps/admin-dashboard/pages/Settings';
+import CaregiverMobileRoutes from './apps/caregiver-mobile/routes';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import './shared/style/global.css';
+import './style/global.css';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="statistics" element={<Statistics />} />
           <Route path="settings" element={<Settings />} />
         </Route>
+        <Route path="/*" element={<CaregiverMobileRoutes />} />
       </Routes>
     </BrowserRouter>
   )

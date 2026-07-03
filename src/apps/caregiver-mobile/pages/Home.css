@@ -1,0 +1,142 @@
+.cg-visit {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: var(--bgPage);
+    display: flex;
+    flex-direction: column;
+}
+
+.cg-visit-stats {
+    display: flex;
+    gap: var(--gap-card);
+    margin-top: 20px;
+}
+
+.cg-visit-stat {
+    flex: 1;
+    background-color: rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-card);
+    padding: 16px;
+    text-align: center;
+}
+
+.cg-visit-stat-value {
+    color: #FFFFFF;
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-xxxl);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.2;
+}
+
+.cg-visit-stat-label {
+    color: rgba(255, 255, 255, 0.85);
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xxs);
+    font-weight: var(--font-weight-regular);
+    margin-top: 4px;
+}
+
+.cg-visit-body {
+    flex: 1;
+    background-color: var(--bgPage);
+    margin-top: -20px;
+    padding: var(--spacing-card) var(--spacing-page) calc(env(safe-area-inset-bottom) + 96px);
+    box-sizing: border-box;
+}
+
+.cg-visit-list-title {
+    color: var(--textPrimary);
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: 12px;
+}
+
+.cg-visit-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-card);
+}
+
+.cg-visit-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: var(--bgCard);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 14px var(--spacing-card);
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.cg-visit-item-avatar {
+    width: var(--size-profile);
+    height: var(--size-profile);
+    border-radius: var(--radius-round);
+    background-color: var(--primaryLight);
+    color: var(--primaryDark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    flex-shrink: 0;
+}
+
+.cg-visit-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cg-visit-item-name {
+    color: var(--textPrimary);
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+}
+
+.cg-visit-item-name span {
+    color: var(--textSecondary);
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-regular);
+    margin-left: 2px;
+}
+
+.cg-visit-item-meta {
+    color: var(--textSecondary);
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xxs);
+    font-weight: var(--font-weight-regular);
+    margin-top: 2px;
+}
+
+.cg-visit-item-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: var(--radius-badge);
+    padding: 6px 10px;
+    font-family: var(--font-family-bold);
+    font-size: var(--font-size-xxxs);
+    font-weight: var(--font-weight-bold);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.cg-visit-item-badge.done {
+    background-color: var(--primaryLight);
+    color: var(--primaryDark);
+}
+
+.cg-visit-item-badge.alert {
+    background-color: var(--alertBg);
+    color: var(--alertDark);
+}
+
+.cg-visit-item-badge.scheduled {
+    background-color: var(--warnBg);
+    color: var(--warnDark);
+}

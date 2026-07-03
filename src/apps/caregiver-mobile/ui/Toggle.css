@@ -1,0 +1,37 @@
+.cg-toggle {
+    position: relative;
+    width: 50px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background-color: var(--toggle-off);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.cg-toggle--on {
+    background-color: var(--toggle-on);
+}
+
+.cg-toggle:disabled {
+    background-color: var(--toggle-disabled);
+    cursor: not-allowed;
+}
+
+.cg-toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-round);
+    background-color: var(--bgCard);
+    box-shadow: 0 1px 2px rgba(16, 16, 32, 0.15);
+    transition: transform var(--transition-fast);
+}
+
+.cg-toggle--on .cg-toggle-knob {
+    transform: translateX(22px);
+}

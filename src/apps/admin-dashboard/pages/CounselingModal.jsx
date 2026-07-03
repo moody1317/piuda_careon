@@ -1,5 +1,5 @@
 import './CounselingModal.css';
-import useLockBodyScroll from '../../../shared/hooks/useLockBodyScroll';
+import useLockBodyScroll from '../hooks/useLockBodyScroll';
 
 const STATIC_STT = `어르신 요즘 밥은 좀 드세요? 밥이 영 입에 안 맞아요. 어제도 조금밖에 못 먹었어요. 왜 그리세요? 그냥 입맛이 없고 혼자 먹으니까 재미없어요. 자식들이 바쁘니까요. 혈압은 재봤어요? 오늘 아침 120에 80이었어요. 약은 잘 챙기고 있죠? 네 약은 잘 챙겨요.`;
 

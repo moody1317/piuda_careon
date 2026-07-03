@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
-import Sidebar from '../../shared/ui/Sidebar';
-import Header from '../../shared/ui/Header';
+import Sidebar from './ui/Sidebar';
+import Header from './ui/Header';
 import './AdminLayout.css';
 
 const ADMIN_MENUS = [

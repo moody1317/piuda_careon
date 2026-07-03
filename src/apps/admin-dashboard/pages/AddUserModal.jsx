@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './AddUserModal.css';
-import useLockBodyScroll from '../../../shared/hooks/useLockBodyScroll';
+import useLockBodyScroll from '../hooks/useLockBodyScroll';
 
 const ROLE_BTNS = ['기관 관리자', '사회복지사', '생활지원사'];
 

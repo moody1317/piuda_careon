@@ -1,5 +1,5 @@
 import './RiskModal.css';
-import useLockBodyScroll from '../../../shared/hooks/useLockBodyScroll';
+import useLockBodyScroll from '../hooks/useLockBodyScroll';
 
 const SUBSCORES = [
     { label: '식사 거부',   score: 38, max: 40 },

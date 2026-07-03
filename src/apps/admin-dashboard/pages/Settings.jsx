@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import './Settings.css';
 import Toggle from '../components/Toggle';
 import AddUserModal from './AddUserModal';
-import ChangePasswordModal from '../../../shared/ui/ChangePasswordModal';
+import ChangePasswordModal from '../ui/ChangePasswordModal';
 
 function usePersistedState(key, initialValue) {
     const [value, setValue] = useState(() => {
