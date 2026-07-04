@@ -8,10 +8,10 @@ const COMPLETED_VISITS = 28;
 const ALERTS = [
     { id: 1, name: '박영희', age: 77, manager: '김민지', desc: '식사거부 3주 · 우울감↑', level: 'urgent' },
     { id: 2, name: '이순자', age: 83, manager: '김민지', desc: '반복발화·기억혼동', level: 'urgent' },
-    { id: 3, name: '정대호', age: 79, manager: '이성희', desc: '낙상위험·수면장애', level: 'urgent' },
-    { id: 4, name: '최옥순', age: 75, manager: '이성희', desc: '약 복용 불규칙', level: 'caution' },
-    { id: 5, name: '강순희', age: 81, manager: '박지수', desc: '우울감 표현 증가', level: 'caution' },
-    { id: 6, name: '윤기철', age: 85, manager: '박지수', desc: '식욕 감소 지속', level: 'caution' },
+    { id: 3, name: '정대호', age: 79, manager: '김민지', desc: '낙상위험·수면장애', level: 'urgent' },
+    { id: 4, name: '최옥순', age: 75, manager: '김민지', desc: '약 복용 불규칙', level: 'caution' },
+    { id: 5, name: '강순희', age: 81, manager: '김민지', desc: '우울감 표현 증가', level: 'caution' },
+    { id: 6, name: '윤기철', age: 85, manager: '김민지', desc: '식욕 감소 지속', level: 'caution' },
 ];
 
 function Alert() {

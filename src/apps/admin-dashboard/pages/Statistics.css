@@ -156,121 +156,30 @@
 
 .st-chart-legend {
     display: flex;
-    gap: 16px;
+    gap: 24px;
     align-items: center;
 }
 
 .st-legend-item {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-family: var(--font-family-regular);
-    font-size: var(--font-size-xs);
+    gap: 8px;
+    font-family: var(--font-family-medium);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
     color: var(--textSecondary);
 }
 
 .st-legend-dot {
-    width: 10px;
-    height: 10px;
+    width: 14px;
+    height: 14px;
     border-radius: var(--radius-round);
     flex-shrink: 0;
 }
 
-.st-mid {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: 16px;
-}
-
-.st-mid .st-card {
+.st-chart-wrap {
+    height: 280px;
     display: flex;
-    flex-direction: column;
-}
-
-.st-mid .st-chart-wrap {
-    flex: 1;
-    display: flex;
-}
-
-.st-quality-list {
-    display: flex;
-    flex-direction: column;
-}
-
-.st-quality-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 9px 0;
-    border-bottom: 1px solid var(--bgSecondary);
-}
-
-.st-quality-row:last-child {
-    border-bottom: none;
-}
-
-.st-quality-person {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 92px;
-    flex-shrink: 0;
-}
-
-.st-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius-round);
-    background: var(--primaryLight);
-    color: var(--primary);
-    font-family: var(--font-family-bold);
-    font-size: var(--font-size-xxxs);
-    font-weight: var(--font-weight-bold);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.st-quality-name {
-    font-family: var(--font-family-medium);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--textPrimary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.st-quality-bar-group {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.st-quality-bar-track {
-    flex: 1;
-    height: 8px;
-    background: var(--bgSecondary);
-    border-radius: var(--radius-progress);
-    overflow: hidden;
-}
-
-.st-quality-bar-fill {
-    height: 100%;
-    background: var(--primary);
-    border-radius: var(--radius-progress);
-}
-
-.st-quality-score {
-    font-family: var(--font-family-medium);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-    color: var(--textSecondary);
-    width: 32px;
-    text-align: right;
-    flex-shrink: 0;
 }
 
 /* tag distribution */

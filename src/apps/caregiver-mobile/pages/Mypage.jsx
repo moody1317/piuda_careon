@@ -50,8 +50,8 @@ function Mypage() {
 
             <div className="cg-my-body">
                 <div className="cg-my-profile">
-                    <span className="cg-my-avatar">이담</span>
-                    <p className="cg-my-name">이담당 사회복지사</p>
+                    <span className="cg-my-avatar">김</span>
+                    <p className="cg-my-name">김민지 사회복지사</p>
                     <p className="cg-my-role">청주 복지관 · 전담사회복지사</p>
 
                     <div className="cg-my-stats">

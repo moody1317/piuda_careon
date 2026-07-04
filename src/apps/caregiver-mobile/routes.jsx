@@ -12,16 +12,19 @@ import PrivacyNotice from './pages/PrivacyNotice';
 import NotificationSettings from './pages/NotificationSettings';
 import VisitRecording from './pages/VisitRecording';
 import AiDraftReview from './pages/AiDraftReview';
+import ScrollToTop from './ui/ScrollToTop';
 
 function CaregiverMobileRoutes() {
     return (
+        <>
+        <ScrollToTop />
         <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/home" element={<Home />} />
             <Route path="/schedule" element={<Schedule />} />
-            <Route path="/schedule/client-detail" element={<ClientDetail />} />
+            <Route path="/clients/client-detail" element={<ClientDetail />} />
             <Route path="/clients" element={<ClientProfile />} />
-            <Route path="/clients/case-detail" element={<CaseDetail />} />
+            <Route path="/schedule/case-detail" element={<CaseDetail />} />
             <Route path="/alerts" element={<Alert />} />
             <Route path="/my" element={<Mypage />} />
             <Route path="/my/change-password" element={<ChangePassword />} />
@@ -30,6 +33,7 @@ function CaregiverMobileRoutes() {
             <Route path="/visit-recording" element={<VisitRecording />} />
             <Route path="/ai-draft-review" element={<AiDraftReview />} />
         </Routes>
+        </>
     );
 }
 

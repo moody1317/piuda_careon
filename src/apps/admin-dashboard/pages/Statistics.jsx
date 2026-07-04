@@ -10,20 +10,11 @@ const STATS = [
     { label: '위험군 전환',    value: '5명',   sub: '즉각 개입 완료',    mod: 'alert'   },
 ];
 
-const MONTHS = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월'];
+const MONTHS = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
 const SERIES = [
     { label: '식사 거부',   color: '#D85A30', values: [2, 3, 3, 4, 5, 6, 7, 9] },
     { label: '우울감 표현', color: '#BB7517', values: [1, 2, 3, 3, 4, 5, 6, 8] },
     { label: '반복 발화',   color: '#185FA5', values: [0, 1, 1, 2, 3, 4, 5, 6] },
-];
-
-const QUALITY = [
-    { avatar: '김민', name: '김민지', score: 92 },
-    { avatar: '박지', name: '박지수', score: 96 },
-    { avatar: '이성', name: '이성희', score: 88 },
-    { avatar: '최수', name: '최수진', score: 84 },
-    { avatar: '한미', name: '한미래', score: 91 },
-    { avatar: '정하', name: '정하늘', score: 95 },
 ];
 
 const TAGS = [
@@ -36,19 +27,34 @@ const TAGS = [
 ];
 
 const SVG_W = 640, SVG_H = 220;
-const PAD   = { l: 16, r: 16, t: 16, b: 32 };
-const CW    = SVG_W - PAD.l - PAD.r;
-const CH    = SVG_H - PAD.t - PAD.b;
-const MAX_V = 10;
+const PAD      = { l: 28, r: 16, t: 16, b: 32 };
+const CW       = SVG_W - PAD.l - PAD.r;
+const CH       = SVG_H - PAD.t - PAD.b;
+const MAX_V    = 10;
+const GRID_STEP = 2;
 
 const toX = (i) => PAD.l + (i / (MONTHS.length - 1)) * CW;
 const toY = (v) => PAD.t + ((MAX_V - v) / MAX_V) * CH;
 const pts  = (values) => values.map((v, i) => `${toX(i)},${toY(v)}`).join(' ');
 
+const GRID_VALUES = Array.from(
+    { length: MAX_V / GRID_STEP + 1 },
+    (_, i) => i * GRID_STEP
+);
+
 function TrendChart() {
     return (
         <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} width="100%" height="100%" preserveAspectRatio="none"
             style={{ display: 'block', overflow: 'visible' }}>
+            {GRID_VALUES.map(gv => (
+                <g key={gv}>
+                    <line x1={PAD.l} x2={PAD.l + CW} y1={toY(gv)} y2={toY(gv)}
+                        stroke="#EDEDF2" strokeWidth={1} />
+                    <text x={PAD.l - 8} y={toY(gv)} dy={3} textAnchor="end"
+                        fontSize={10} fill="#A5A6B1">{gv}</text>
+                </g>
+            ))}
+
             {SERIES.map(s => (
                 <polyline key={s.label} points={pts(s.values)}
                     fill="none" stroke={s.color} strokeWidth={2.5}
@@ -101,44 +107,20 @@ function Statistics() {
                 ))}
             </div>
 
-            <div className="st-mid">
-                <div className="st-card">
-                    <div className="st-card-header st-card-header--between">
-                        <span className="st-section-title">이상징후 월별 추이</span>
-                        <div className="st-chart-legend">
-                            {SERIES.map(s => (
-                                <span key={s.label} className="st-legend-item">
-                                    <span className="st-legend-dot" style={{ background: s.color }} />
-                                    {s.label}
-                                </span>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="st-chart-wrap">
-                        <TrendChart />
-                    </div>
-                </div>
-
-                <div className="st-card">
-                    <div className="st-card-header">
-                        <span className="st-section-title">생활지원사 상담 품질</span>
-                    </div>
-                    <div className="st-quality-list">
-                        {QUALITY.map((q, i) => (
-                            <div key={i} className="st-quality-row">
-                                <div className="st-quality-person">
-                                    <span className="st-avatar">{q.avatar}</span>
-                                    <span className="st-quality-name">{q.name}</span>
-                                </div>
-                                <div className="st-quality-bar-group">
-                                    <div className="st-quality-bar-track">
-                                        <div className="st-quality-bar-fill" style={{ width: `${q.score}%` }} />
-                                    </div>
-                                    <span className="st-quality-score">{q.score}점</span>
-                                </div>
-                            </div>
+            <div className="st-card">
+                <div className="st-card-header st-card-header--between">
+                    <span className="st-section-title">이상징후 월별 추이</span>
+                    <div className="st-chart-legend">
+                        {SERIES.map(s => (
+                            <span key={s.label} className="st-legend-item">
+                                <span className="st-legend-dot" style={{ background: s.color }} />
+                                {s.label}
+                            </span>
                         ))}
                     </div>
+                </div>
+                <div className="st-chart-wrap">
+                    <TrendChart />
                 </div>
             </div>
 

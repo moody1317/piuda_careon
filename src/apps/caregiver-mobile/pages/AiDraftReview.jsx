@@ -57,13 +57,6 @@ function AiDraftReview() {
                 <div className="cg-draft-card">
                     <div className="cg-draft-card-header">
                         <p className="cg-draft-card-title">상담 요약 (수정 가능)</p>
-                        <button
-                            type="button"
-                            className="cg-draft-edit-link"
-                            onClick={() => setIsEditing(true)}
-                        >
-                            <i className="bi bi-pencil-fill" /> 직접 수정
-                        </button>
                     </div>
                     {isEditing ? (
                         <textarea

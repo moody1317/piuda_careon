@@ -15,13 +15,13 @@ const FILTERS = [
 const CLIENTS = [
     { id: 1, initials: '박영', name: '박영희', age: 77, manager: '김민지', tags: '식사거부·우울감', status: 'urgent' },
     { id: 2, initials: '이순', name: '이순자', age: 83, manager: '김민지', tags: '반복발화·기억혼돈', status: 'urgent' },
-    { id: 3, initials: '정대', name: '정대호', age: 79, manager: '이성희', tags: '낙상위험·수면장애', status: 'urgent' },
-    { id: 4, initials: '최옥', name: '최옥순', age: 75, manager: '이성희', tags: '약 복용 불규칙', status: 'caution' },
-    { id: 5, initials: '강순', name: '강순희', age: 81, manager: '박지수', tags: '우울감 표현 증가', status: 'caution' },
-    { id: 6, initials: '윤기', name: '윤기철', age: 85, manager: '박지수', tags: '식욕 감소 지속', status: 'caution' },
+    { id: 3, initials: '정대', name: '정대호', age: 79, manager: '김민지', tags: '낙상위험·수면장애', status: 'urgent' },
+    { id: 4, initials: '최옥', name: '최옥순', age: 75, manager: '김민지', tags: '약 복용 불규칙', status: 'caution' },
+    { id: 5, initials: '강순', name: '강순희', age: 81, manager: '김민지', tags: '우울감 표현 증가', status: 'caution' },
+    { id: 6, initials: '윤기', name: '윤기철', age: 85, manager: '김민지', tags: '식욕 감소 지속', status: 'caution' },
     { id: 7, initials: '김성', name: '김성호', age: 81, manager: '김민지', tags: '정상', status: 'normal' },
     { id: 8, initials: '최화', name: '최화자', age: 79, manager: '김민지', tags: '정상', status: 'normal' },
-    { id: 9, initials: '오달', name: '오달수', age: 77, manager: '오은지', tags: '정상', status: 'normal' },
+    { id: 9, initials: '오달', name: '오달수', age: 77, manager: '김민지', tags: '정상', status: 'normal' },
 ];
 
 const FILTER_COUNTS = {
@@ -82,7 +82,7 @@ function ClientProfile() {
                         <div
                             key={client.id}
                             className="cg-client-item"
-                            onClick={() => navigate('/clients/case-detail', { state: { client } })}
+                            onClick={() => navigate('/clients/client-detail', { state: { client } })}
                         >
                             <span className="cg-client-item-avatar">{client.initials}</span>
                             <div className="cg-client-item-info">

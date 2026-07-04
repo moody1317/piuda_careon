@@ -28,7 +28,7 @@ const STATUS_LABEL = {
 
 function Schedule() {
     const navigate = useNavigate();
-    const [activeFilter, setActiveFilter] = useState('done');
+    const [activeFilter, setActiveFilter] = useState('all');
 
     const filteredLogs = LOGS.filter((log) => activeFilter === 'all' || log.status === activeFilter);
 
@@ -56,7 +56,7 @@ function Schedule() {
                         <div
                             key={log.id}
                             className="cg-log-item"
-                            onClick={() => navigate('/schedule/client-detail', { state: { log, source: 'schedule' } })}
+                            onClick={() => navigate('/ai-draft-review', { state: { log, source: 'schedule' } })}
                         >
                             <span className="cg-log-item-avatar">{log.initials}</span>
                             <div className="cg-log-item-body">

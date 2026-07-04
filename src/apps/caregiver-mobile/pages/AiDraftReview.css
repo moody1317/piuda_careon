@@ -9,7 +9,6 @@
 .cg-draft-body {
     flex: 1;
     background-color: var(--bgPage);
-    border-radius: var(--radius-card) var(--radius-card) 0 0;
     margin-top: -20px;
     padding: var(--spacing-card) var(--spacing-page) calc(env(safe-area-inset-bottom) + 96px);
     box-sizing: border-box;
@@ -100,20 +99,6 @@
 }
 
 /* 상담 요약 */
-.cg-draft-edit-link {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: none;
-    border: none;
-    padding: 0;
-    color: var(--primary);
-    font-family: var(--font-family-medium);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-    cursor: pointer;
-}
-
 .cg-draft-summary {
     background-color: var(--bgSecondary);
     border: 1px solid var(--border);
