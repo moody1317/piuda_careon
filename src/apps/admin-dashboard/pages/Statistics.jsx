@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './Statistics.css';
 
-const PERIODS = ['이번 주', '이번 달', '3개월', '6개월', '직접 설정'];
+const PERIODS = ['이번 주', '이번 달', '3개월', '6개월'];
 
 const STATS = [
     { label: '총 방문 완료',   value: '522회', sub: '이번 달',           mod: 'primary' },
@@ -108,25 +108,8 @@ function Statistics() {
             </div>
 
             <div className="st-card">
-                <div className="st-card-header st-card-header--between">
-                    <span className="st-section-title">이상징후 월별 추이</span>
-                    <div className="st-chart-legend">
-                        {SERIES.map(s => (
-                            <span key={s.label} className="st-legend-item">
-                                <span className="st-legend-dot" style={{ background: s.color }} />
-                                {s.label}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-                <div className="st-chart-wrap">
-                    <TrendChart />
-                </div>
-            </div>
-
-            <div className="st-card">
                 <div className="st-card-header">
-                    <span className="st-section-title">이번 달 특이사항 태그 분포</span>
+                    <span className="st-section-title">{period} 특이사항 태그 분포</span>
                 </div>
                 <div className="st-tag-grid">
                     {TAGS.map((t, i) => (
@@ -140,6 +123,23 @@ function Statistics() {
                             <span className="st-tag-percent">{t.percent}%</span>
                         </div>
                     ))}
+                </div>
+            </div>
+
+            <div className="st-card">
+                <div className="st-card-header st-card-header--between">
+                    <span className="st-section-title">이상징후 월별 추이</span>
+                    <div className="st-chart-legend">
+                        {SERIES.map(s => (
+                            <span key={s.label} className="st-legend-item">
+                                <span className="st-legend-dot" style={{ background: s.color }} />
+                                {s.label}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+                <div className="st-chart-wrap">
+                    <TrendChart />
                 </div>
             </div>
         </div>
