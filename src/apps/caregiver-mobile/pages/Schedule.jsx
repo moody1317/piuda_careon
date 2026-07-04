@@ -14,9 +14,9 @@ const FILTERS = [
 const LOGS = [
     { id: 1, initials: '박영', name: '박영희', age: 77, gender: '여', datetime: '2026.05.26 10:45', manager: '김민지', tags: ['식사거부', '우울감'], status: 'done' },
     { id: 2, initials: '이순', name: '이순자', age: 83, gender: '여', datetime: '2026.05.26 09:12', manager: '김민지', tags: ['반복발화'], status: 'done' },
-    { id: 3, initials: '정대', name: '정대호', age: 79, gender: '남', datetime: '2026.05.25 14:00', manager: '이성희', tags: ['낙상위험'], status: 'pending' },
-    { id: 4, initials: '최옥', name: '최옥순', age: 75, gender: '여', datetime: '2026.05.25 11:30', manager: '이성희', tags: ['약 복용'], status: 'pending' },
-    { id: 5, initials: '강순', name: '강순희', age: 81, gender: '여', datetime: '2026.05.24 14:10', manager: '박지수', tags: ['우울감'], status: 'pending' },
+    { id: 3, initials: '정대', name: '정대호', age: 79, gender: '남', datetime: '2026.05.25 14:00', manager: '김민지', tags: ['낙상위험'], status: 'pending' },
+    { id: 4, initials: '최옥', name: '최옥순', age: 75, gender: '여', datetime: '2026.05.25 11:30', manager: '김민지', tags: ['약 복용'], status: 'pending' },
+    { id: 5, initials: '강순', name: '강순희', age: 81, gender: '여', datetime: '2026.05.24 14:10', manager: '김민지', tags: ['우울감'], status: 'pending' },
     { id: 6, initials: '김성', name: '김성호', age: 81, gender: '남', datetime: '2026.05.24 11:00', manager: '김민지', tags: ['정상'], status: 'done' },
     { id: 7, initials: '최화', name: '최화자', age: 79, gender: '여', datetime: '2026.05.23 10:30', manager: '김민지', tags: ['정상'], status: 'done' },
 ];

@@ -46,7 +46,7 @@ function Home() {
                         <div
                             key={visit.id}
                             className="cg-visit-item"
-                            onClick={() => navigate('/clients/client-detail', { state: { log: visit, source: 'home' } })}
+                            onClick={() => navigate('/client-detail', { state: { log: visit, source: 'home' } })}
                         >
                             <span className="cg-visit-item-avatar">{visit.initials}</span>
                             <div className="cg-visit-item-info">

@@ -5,6 +5,13 @@ import './CaseDetail.css';
 
 const DEFAULT_CLIENT = { name: '박영희', age: 77 };
 
+const BASIC_INFO = [
+    { label: '주소', value: '청주시 흥덕구 사직동 45' },
+    { label: '주요 질환', value: '고혈압, 당뇨' },
+    { label: '연락처', value: '010-XXXX-XXXX' },
+    { label: '가족 연락처', value: '박○○ (자녀)' },
+];
+
 const SYMPTOMS = [
     { id: 1, title: '식사 거부', meta: '3주 연속 · 주 4회', tone: 'alert' },
     { id: 2, title: '우울감 표현', meta: '5회 중 4회 언급', tone: 'alert' },
@@ -32,6 +39,18 @@ function CaseDetail() {
             <PageHeader title="상세 내역" subtitle={`${client.name} (${client.age}세) · 이상징후 집중 관리`} />
 
             <div className="cg-case-body">
+                <div className="cg-case-card">
+                    <p className="cg-case-card-title">기본 정보</p>
+                    <div className="cg-case-basic">
+                        {BASIC_INFO.map((info) => (
+                            <div key={info.label} className="cg-case-basic-row">
+                                <span className="cg-case-basic-label">{info.label}</span>
+                                <span className="cg-case-basic-value">{info.value}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
                 <div className="cg-case-card">
                     <p className="cg-case-card-title">이상징후 요약</p>
                     <div className="cg-case-symptoms">

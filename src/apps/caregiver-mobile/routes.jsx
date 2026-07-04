@@ -22,9 +22,9 @@ function CaregiverMobileRoutes() {
             <Route path="/login" element={<Login />} />
             <Route path="/home" element={<Home />} />
             <Route path="/schedule" element={<Schedule />} />
-            <Route path="/clients/client-detail" element={<ClientDetail />} />
+            <Route path="/client-detail" element={<ClientDetail />} />
             <Route path="/clients" element={<ClientProfile />} />
-            <Route path="/schedule/case-detail" element={<CaseDetail />} />
+            <Route path="/clients/case-detail" element={<CaseDetail />} />
             <Route path="/alerts" element={<Alert />} />
             <Route path="/my" element={<Mypage />} />
             <Route path="/my/change-password" element={<ChangePassword />} />

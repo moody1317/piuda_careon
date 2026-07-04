@@ -61,6 +61,46 @@
     font-weight: var(--font-weight-regular);
 }
 
+/* 기본 정보 */
+.cg-case-basic {
+    display: flex;
+    flex-direction: column;
+}
+
+.cg-case-basic-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.cg-case-basic-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.cg-case-basic-row:first-child {
+    padding-top: 0;
+}
+
+.cg-case-basic-label {
+    color: var(--textSecondary);
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-regular);
+    flex-shrink: 0;
+}
+
+.cg-case-basic-value {
+    color: var(--textPrimary);
+    font-family: var(--font-family-medium);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-align: right;
+}
+
 /* 이상징후 요약 */
 .cg-case-symptoms {
     display: flex;

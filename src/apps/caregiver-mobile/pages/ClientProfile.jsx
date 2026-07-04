@@ -82,7 +82,7 @@ function ClientProfile() {
                         <div
                             key={client.id}
                             className="cg-client-item"
-                            onClick={() => navigate('/clients/client-detail', { state: { client } })}
+                            onClick={() => navigate('/clients/case-detail', { state: { client } })}
                         >
                             <span className="cg-client-item-avatar">{client.initials}</span>
                             <div className="cg-client-item-info">
