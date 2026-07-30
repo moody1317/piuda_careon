@@ -1,5 +1,6 @@
 import { MOCK_CLIENTS } from './clients.mock';
 import { STATUS_LABELS } from './status';
+import { getToken } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
@@ -13,9 +14,22 @@ export const STATUS_META = {
     SPECIAL_NOTE: { key: 'urgent', label: STATUS_LABELS.SPECIAL_NOTE },
 };
 
+export const CARE_LEVEL_LABELS = {
+    LEVEL1: '1등급',
+    LEVEL2: '2등급',
+    LEVEL3: '3등급',
+    LEVEL4: '4등급',
+    LEVEL5: '5등급',
+};
+
 async function request(path, options = {}) {
+    const token = getToken();
     const res = await fetch(`${API_BASE_URL}${path}`, {
-        headers: { 'Content-Type': 'application/json', ...options.headers },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...options.headers,
+        },
         ...options,
     });
 
@@ -45,7 +59,7 @@ export function getRecipientsByCaregiver(caregiverId) {
 }
 
 // 대상자 등록
-export function createClient({ name, age, gender, address, mainDisease, phone, familyContactName, familyRelation, familyContactPhone, caregiverId }) {
+export function createClient({ name, age, gender, address, careLevel, mainDisease, phone, familyContactName, familyRelation, familyContactPhone, caregiverId }) {
     if (USE_MOCK) {
         const caregiver = MOCK_CLIENTS.find(c => c.caregiverId === caregiverId);
         const client = {
@@ -55,6 +69,7 @@ export function createClient({ name, age, gender, address, mainDisease, phone, f
             age,
             gender,
             address,
+            careLevel,
             mainDisease,
             phone,
             familyContactName,
@@ -67,7 +82,7 @@ export function createClient({ name, age, gender, address, mainDisease, phone, f
     }
     return request('/care-recipients', {
         method: 'POST',
-        body: JSON.stringify({ name, age, gender, address, mainDisease, phone, familyContactName, familyRelation, familyContactPhone, caregiverId }),
+        body: JSON.stringify({ name, age, gender, address, careLevel, mainDisease, phone, familyContactName, familyRelation, familyContactPhone, caregiverId }),
     });
 }
 

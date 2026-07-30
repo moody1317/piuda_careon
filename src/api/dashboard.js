@@ -1,4 +1,5 @@
 import { MOCK_DASHBOARD_SUMMARY } from './dashboard.mock';
+import { getToken } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
@@ -6,8 +7,13 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 const USE_MOCK = true;
 
 async function request(path, options = {}) {
+    const token = getToken();
     const res = await fetch(`${API_BASE_URL}${path}`, {
-        headers: { 'Content-Type': 'application/json', ...options.headers },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...options.headers,
+        },
         ...options,
     });
 

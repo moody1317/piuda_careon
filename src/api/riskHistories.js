@@ -1,17 +1,19 @@
 import { MOCK_RISK_HISTORIES } from './riskHistories.mock';
+import { getToken } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
-// 백엔드 연동 전까지 더미데이터 사용. 연동 완료 후 false로 바꾸고
-// 이 파일의 USE_MOCK 분기 + riskHistories.mock.js를 제거하면 됩니다.
+// 백엔드 연동 전까지 더미데이터 사용. 연동 완료 후 false로 바꾸고 이 파일의 USE_MOCK 분기 + riskHistories.mock.js 제거
 const USE_MOCK = true;
 
-// 상담일지 처리 결과를 기반으로 서버가 자동 생성하는 이력이라
-// 프론트에서 직접 생성(create)하지 않고 조회만 제공합니다.
-
 async function request(path, options = {}) {
+    const token = getToken();
     const res = await fetch(`${API_BASE_URL}${path}`, {
-        headers: { 'Content-Type': 'application/json', ...options.headers },
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...options.headers,
+        },
         ...options,
     });
 
@@ -23,8 +25,7 @@ async function request(path, options = {}) {
     return res.json();
 }
 
-// 위험 상태 변화 이력 조회 (institutionId, recipientId, consultationId로 필터링 가능)
-// 최신순(created_at 내림차순)으로 정렬해 반환합니다.
+// 위험 상태 변화 이력 조회
 export function getRiskHistories({ institutionId, recipientId, consultationId } = {}) {
     if (USE_MOCK) {
         let list = MOCK_RISK_HISTORIES;
