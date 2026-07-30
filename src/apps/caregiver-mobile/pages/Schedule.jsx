@@ -4,7 +4,7 @@ import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
 import { getConsultations } from '../../../api/consultations';
-import { getUsers } from '../../../api/users';
+import { getCurrentUser } from '../../../api/users';
 import './Schedule.css';
 
 const FILTERS = [
@@ -28,19 +28,17 @@ function Schedule() {
     const [logs, setLogs] = useState([]);
 
     useEffect(() => {
-        // TODO: 로그인/세션 연동 후 실제 로그인한 생활지원사 이름으로 교체
-        getUsers()
-            .then((users) => users.find((u) => u.name === '김민지'))
-            .then((caregiver) => caregiver ? getConsultations() : [])
-            .then((list) => {
-                const mine = list.filter((c) => c.caregiverName === '김민지');
+        getCurrentUser()
+            .then((caregiver) => Promise.all([caregiver, getConsultations()]))
+            .then(([caregiver, list]) => {
+                const mine = list.filter((c) => c.caregiverName === caregiver.name);
                 setLogs(mine.map((c) => ({
                     id: c.id,
                     initials: c.recipientName.slice(0, 2),
                     name: c.recipientName,
                     age: c.recipientAge,
                     datetime: formatDatetime(c.consultedAt),
-                    manager: '김민지',
+                    manager: caregiver.name,
                     tags: c.aiTags,
                     // ConsultationResponse(목록)에는 workerFinalNote가 없어 작성완료 여부를
                     // 판단할 수 없음. 백엔드에 필드 추가되면 여기서 반영.

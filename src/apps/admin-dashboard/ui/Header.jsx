@@ -60,8 +60,6 @@ function Header({ title, subtitle, notificationCount = 0 }) {
                         </div>
                     )}
                 </div>
-
-                {/*<button className="header-admin">관리</button>*/}
             </div>
         </div>
     );

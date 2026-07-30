@@ -99,7 +99,25 @@ export function uploadAudio(id, file) {
 // 방문 상담 녹음 → STT/LLM 일괄 처리
 export function processConsultation({ caregiverId, recipientId, consultedAt, file }) {
     if (USE_MOCK) {
-        return Promise.reject(new Error('목업 모드에서는 지원하지 않는 기능입니다.'));
+        const consultation = {
+            id: String(Date.now()),
+            recipientName: '',
+            recipientAge: null,
+            caregiverName: '',
+            consultedAt,
+            audioUrl: `mock://${file?.name ?? 'audio'}`,
+            status: 'NORMAL',
+            riskScore: null,
+            aiTags: [],
+            sttText: '(mock) STT 처리 결과',
+            aiSummary: '(mock) AI 자동 요약 결과',
+            aiSummaryPreview: '(mock) AI 자동 요약 결과',
+            workerFinalNote: null,
+            socialWorkerOpinion: null,
+            changes: [],
+        };
+        MOCK_CONSULTATIONS.push(consultation);
+        return Promise.resolve(consultation);
     }
     const formData = new FormData();
     formData.append('caregiverId', caregiverId);

@@ -5,7 +5,7 @@ import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
 import { getRecipientsByCaregiver, STATUS_META } from '../../../api/clients';
 import { getConsultations } from '../../../api/consultations';
-import { getUsers } from '../../../api/users';
+import { getCurrentUser } from '../../../api/users';
 import './ClientProfile.css';
 
 const FILTERS = [
@@ -30,12 +30,8 @@ function ClientProfile() {
     const [clients, setClients] = useState([]);
 
     useEffect(() => {
-        // TODO: 로그인/세션 연동 후 실제 로그인한 생활지원사 이름으로 교체
-        getUsers()
-            .then((users) => users.find((u) => u.name === '김민지'))
-            .then((caregiver) => caregiver
-                ? Promise.all([getRecipientsByCaregiver(caregiver.id), getConsultations()])
-                : [[], []])
+        getCurrentUser()
+            .then((caregiver) => Promise.all([getRecipientsByCaregiver(caregiver.id), getConsultations()]))
             .then(([clientList, consultations]) => {
                 // 대상자 상태는 care-recipient가 아닌 consultation.status 기준.
                 // recipientId 연결고리가 없어 이름 + 최신 상담일시로 매칭.

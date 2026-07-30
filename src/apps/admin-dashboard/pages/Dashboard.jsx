@@ -23,9 +23,9 @@ const RISK_ROWS = [
 
 const WEEKS  = ['3/31', '4/7', '4/14', '4/21', '4/28', '5/5', '5/12', '5/19'];
 const SERIES = [
-    { label: '식사 거부',   color: '#D85A30', values: [3, 4, 4, 5, 6, 7, 6, 8] },
-    { label: '우울감 표현', color: '#BB7517', values: [2, 3, 3, 3, 4, 5, 5, 6] },
-    { label: '반복 발화',   color: '#185FA5', values: [1, 1, 3, 3, 3, 3, 4, 5] },
+    { label: '식사 거부',   color: 'var(--alert)', values: [3, 4, 4, 5, 6, 7, 6, 8] },
+    { label: '우울감 표현', color: 'var(--warnMid)', values: [2, 3, 3, 3, 4, 5, 5, 6] },
+    { label: '반복 발화',   color: 'var(--blueMid)', values: [1, 1, 3, 3, 3, 3, 4, 5] },
 ];
 
 const SVG_W = 960, SVG_H = 246;
@@ -47,9 +47,9 @@ function LineChart() {
             {GRID_Y.map(v => (
                 <g key={v}>
                     <line x1={PAD.l} y1={toY(v)} x2={SVG_W - PAD.r} y2={toY(v)}
-                        stroke="#E0E1E7" strokeWidth={1} />
+                        stroke="var(--border)" strokeWidth={1} />
                     <text x={PAD.l - 6} y={toY(v)} textAnchor="end"
-                        dominantBaseline="middle" fontSize={10} fill="#A5A6B1">{v}</text>
+                        dominantBaseline="middle" fontSize={10} fill="var(--textHint)">{v}</text>
                 </g>
             ))}
 
@@ -69,15 +69,15 @@ function LineChart() {
 
             {WEEKS.map((w, i) => (
                 <text key={w} x={toX(i)} y={SVG_H - 8} textAnchor="middle"
-                    fontSize={10} fill="#A5A6B1">{w}</text>
+                    fontSize={10} fill="var(--textHint)">{w}</text>
             ))}
 
             <rect x={calloutX} y={calloutY} width={170} height={50}
-                rx={6} fill="#FAECE7" stroke="#D85A30" strokeWidth={1} />
+                rx={6} fill="var(--alertBg)" stroke="var(--alert)" strokeWidth={1} />
             <text x={calloutX + 10} y={calloutY + 19}
-                fontSize={11} fontWeight="700" fill="#712B13">최근 3주 연속 증가 추이</text>
+                fontSize={11} fontWeight="700" fill="var(--alertDark)">최근 3주 연속 증가 추이</text>
             <text x={calloutX + 10} y={calloutY + 37}
-                fontSize={10} fill="#993C1D">사회복지사 개입 검토 권고</text>
+                fontSize={10} fill="var(--alertMid)">사회복지사 개입 검토 권고</text>
         </svg>
     );
 }

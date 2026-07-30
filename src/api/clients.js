@@ -1,25 +1,15 @@
-import { MOCK_CLIENTS } from './clients.mock';
-import { STATUS_LABELS } from './status';
+import { MOCK_USERS, MOCK_CURRENT_USER_ID } from './users.mock';
 import { getToken } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
-// 백엔드 연동 전까지 더미데이터 사용. 연동 완료 후 false로 바꾸고 이 파일의 USE_MOCK 분기 + clients.mock.js 제거
+// 백엔드 연동 전까지 더미데이터 사용. 연동 완료 후 false로 바꾸고 이 파일의 USE_MOCK 분기 + users.mock.js 제거
 const USE_MOCK = true;
 
-// 대상자 상태(정상/검토필요/특이사항)
-export const STATUS_META = {
-    NORMAL: { key: 'normal', label: STATUS_LABELS.NORMAL },
-    NEED_REVIEW: { key: 'caution', label: STATUS_LABELS.NEED_REVIEW },
-    SPECIAL_NOTE: { key: 'urgent', label: STATUS_LABELS.SPECIAL_NOTE },
-};
-
-export const CARE_LEVEL_LABELS = {
-    LEVEL1: '1등급',
-    LEVEL2: '2등급',
-    LEVEL3: '3등급',
-    LEVEL4: '4등급',
-    LEVEL5: '5등급',
+export const ROLE_LABELS = {
+    ADMIN: '기관 관리자',
+    SOCIAL_WORKER: '사회복지사',
+    CARE_WORKER: '생활지원사',
 };
 
 async function request(path, options = {}) {
@@ -34,64 +24,111 @@ async function request(path, options = {}) {
     });
 
     if (!res.ok) {
-        throw new Error(`대상자 API 요청 실패 (${res.status}): ${path}`);
+        throw new Error(`사용자 API 요청 실패 (${res.status}): ${path}`);
     }
 
     if (res.status === 204) return null;
     return res.json();
 }
 
-// 대상자 단건 조회
-export function getClient(id) {
-    if (USE_MOCK) {
-        const found = MOCK_CLIENTS.find(c => c.id === id);
-        return found ? Promise.resolve(found) : Promise.reject(new Error('대상자를 찾을 수 없습니다.'));
-    }
-    return request(`/care-recipients/${id}`);
+// passwordHash는 서버 전용 필드이므로 응답에서 제외
+function sanitize(user) {
+    if (!user) return user;
+    const safe = { ...user };
+    delete safe.passwordHash;
+    return safe;
 }
 
-// 담당 생활지원사 기준 대상자 목록 조회
-export function getRecipientsByCaregiver(caregiverId) {
+// 사용자 목록 조회 (institutionId로 소속 기관 필터링 가능)
+export function getUsers({ institutionId } = {}) {
     if (USE_MOCK) {
-        return Promise.resolve(MOCK_CLIENTS.filter(c => c.caregiverId === caregiverId));
+        const list = institutionId
+            ? MOCK_USERS.filter(u => u.institutionId === institutionId)
+            : MOCK_USERS;
+        return Promise.resolve(list.map(sanitize));
     }
-    return request(`/care-recipients/caregiver/${caregiverId}`);
+    const query = institutionId ? `?institutionId=${encodeURIComponent(institutionId)}` : '';
+    return request(`/users${query}`);
 }
 
-// 대상자 등록
-export function createClient({ name, age, gender, address, careLevel, mainDisease, phone, familyContactName, familyRelation, familyContactPhone, caregiverId }) {
+// 사용자 단건 조회 (id)
+export function getUser(id) {
     if (USE_MOCK) {
-        const caregiver = MOCK_CLIENTS.find(c => c.caregiverId === caregiverId);
-        const client = {
+        const found = MOCK_USERS.find(u => u.id === id);
+        return found ? Promise.resolve(sanitize(found)) : Promise.reject(new Error('사용자를 찾을 수 없습니다.'));
+    }
+    return request(`/users/${id}`);
+}
+
+// 현재 로그인한 사용자 조회
+export function getCurrentUser() {
+    return getUser(MOCK_CURRENT_USER_ID);
+}
+
+// 사용자(계정) 등록
+export function createUser({ institutionId, name, email, phone, role, password }) {
+    if (USE_MOCK) {
+        const user = {
             id: String(Date.now()),
-            caregiverId,
+            institutionId,
             name,
-            age,
-            gender,
-            address,
-            careLevel,
-            mainDisease,
+            email,
+            passwordHash: `mock:${password}`,
+            role,
             phone,
-            familyContactName,
-            familyRelation,
-            familyContactPhone,
-            caregiverName: caregiver?.caregiverName ?? '',
+            agreedTerms: false,
+            isActive: true,
+            lastLoginAt: null,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
         };
-        MOCK_CLIENTS.push(client);
-        return Promise.resolve(client);
+        MOCK_USERS.push(user);
+        return Promise.resolve(sanitize(user));
     }
-    return request('/care-recipients', {
+    return request('/users', {
         method: 'POST',
-        body: JSON.stringify({ name, age, gender, address, careLevel, mainDisease, phone, familyContactName, familyRelation, familyContactPhone, caregiverId }),
+        body: JSON.stringify({ institutionId, name, email, phone, role, password }),
     });
 }
 
-// 대상자 삭제
-export function deleteClient(id) {
+// 사용자 정보 수정
+export function updateUser(id, { name, email, phone, role, isActive }) {
     if (USE_MOCK) {
-        const index = MOCK_CLIENTS.findIndex(c => c.id === id);
-        if (index !== -1) MOCK_CLIENTS.splice(index, 1);
+        const user = MOCK_USERS.find(u => u.id === id);
+        if (!user) return Promise.reject(new Error('사용자를 찾을 수 없습니다.'));
+        Object.assign(user, { name, email, phone, role, isActive, updatedAt: new Date().toISOString() });
+        return Promise.resolve(sanitize(user));
+    }
+    return request(`/users/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ name, email, phone, role, isActive }),
+    });
+}
+
+// 비밀번호 변경
+export function changePassword(id, { currentPassword, newPassword }) {
+    if (USE_MOCK) {
+        const user = MOCK_USERS.find(u => u.id === id);
+        if (!user) return Promise.reject(new Error('사용자를 찾을 수 없습니다.'));
+        if (user.passwordHash !== `mock:${currentPassword}`) {
+            return Promise.reject(new Error('현재 비밀번호가 일치하지 않습니다.'));
+        }
+        user.passwordHash = `mock:${newPassword}`;
+        user.updatedAt = new Date().toISOString();
         return Promise.resolve(null);
     }
-    return request(`/care-recipients/${id}`, { method: 'DELETE' });
+    return request(`/users/${id}/password`, {
+        method: 'PATCH',
+        body: JSON.stringify({ currentPassword, newPassword }),
+    });
+}
+
+// 사용자 삭제
+export function deleteUser(id) {
+    if (USE_MOCK) {
+        const index = MOCK_USERS.findIndex(u => u.id === id);
+        if (index !== -1) MOCK_USERS.splice(index, 1);
+        return Promise.resolve(null);
+    }
+    return request(`/users/${id}`, { method: 'DELETE' });
 }

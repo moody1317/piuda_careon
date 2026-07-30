@@ -120,14 +120,6 @@
     font-weight: var(--font-weight-regular);
 }
 
-.cg-alert-row-manager {
-    color: var(--textSecondary);
-    font-family: var(--font-family-regular);
-    font-size: var(--font-size-xxs);
-    font-weight: var(--font-weight-regular);
-    margin-top: 2px;
-}
-
 .cg-alert-row-desc {
     font-family: var(--font-family-bold);
     font-size: var(--font-size-xs);

@@ -19,7 +19,7 @@ function Login() {
         setSubmitting(true);
         setError('');
         try {
-            await login({ institutionCode, email, password });
+            await login({ institutionCode, email, password }, alwaysLogin);
             navigate('/dashboard');
         } catch (err) {
             setError(err.message ?? '로그인에 실패했습니다.');

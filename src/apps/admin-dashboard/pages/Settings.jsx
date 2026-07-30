@@ -3,7 +3,8 @@ import './Settings.css';
 import Toggle from '../components/Toggle';
 import AddUserModal from './AddUserModal';
 import ChangePasswordModal from '../ui/ChangePasswordModal';
-import { getInstitutions, updateInstitution } from '../../../api/institutions';
+import { getInstitution, updateInstitution } from '../../../api/institutions';
+import { me } from '../../../api/auth';
 import { getUsers, ROLE_LABELS } from '../../../api/users';
 import { getSettings, updateSettings, STT_PROVIDER_LABELS, LLM_PROVIDER_LABELS } from '../../../api/settings';
 
@@ -74,9 +75,9 @@ function Settings() {
     const [settingsSaving, setSettingsSaving] = useState(false);
 
     useEffect(() => {
-        getInstitutions()
-            .then(([institution]) => {
-                if (!institution) return;
+        me()
+            .then((user) => getInstitution(user.institutionId))
+            .then((institution) => {
                 setOrg(institution);
                 setSavedOrg(institution);
             })

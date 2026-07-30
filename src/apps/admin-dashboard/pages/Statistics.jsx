@@ -12,9 +12,9 @@ const STATS = [
 
 const MONTHS = ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'];
 const SERIES = [
-    { label: '식사 거부',   color: '#D85A30', values: [2, 3, 3, 4, 5, 6, 7, 9] },
-    { label: '우울감 표현', color: '#BB7517', values: [1, 2, 3, 3, 4, 5, 6, 8] },
-    { label: '반복 발화',   color: '#185FA5', values: [0, 1, 1, 2, 3, 4, 5, 6] },
+    { label: '식사 거부',   color: 'var(--alert)', values: [2, 3, 3, 4, 5, 6, 7, 9] },
+    { label: '우울감 표현', color: 'var(--warnMid)', values: [1, 2, 3, 3, 4, 5, 6, 8] },
+    { label: '반복 발화',   color: 'var(--blueMid)', values: [0, 1, 1, 2, 3, 4, 5, 6] },
 ];
 
 const TAGS = [
@@ -49,9 +49,9 @@ function TrendChart() {
             {GRID_VALUES.map(gv => (
                 <g key={gv}>
                     <line x1={PAD.l} x2={PAD.l + CW} y1={toY(gv)} y2={toY(gv)}
-                        stroke="#EDEDF2" strokeWidth={1} />
+                        stroke="var(--border)" strokeWidth={1} />
                     <text x={PAD.l - 8} y={toY(gv)} dy={3} textAnchor="end"
-                        fontSize={10} fill="#A5A6B1">{gv}</text>
+                        fontSize={10} fill="var(--textHint)">{gv}</text>
                 </g>
             ))}
 
@@ -67,7 +67,7 @@ function TrendChart() {
 
             {MONTHS.map((m, i) => (
                 <text key={m} x={toX(i)} y={SVG_H - 10} textAnchor="middle"
-                    fontSize={11} fill="#A5A6B1">{m}</text>
+                    fontSize={11} fill="var(--textHint)">{m}</text>
             ))}
         </svg>
     );

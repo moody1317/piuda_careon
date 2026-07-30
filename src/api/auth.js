@@ -30,15 +30,23 @@ function findInstitutionByCode(institutionCode) {
 }
 
 export function getToken() {
-    return localStorage.getItem(TOKEN_KEY);
+    return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
 }
 
-function setToken(token) {
-    if (token) localStorage.setItem(TOKEN_KEY, token);
+function setToken(token, persist = true) {
+    if (!token) return;
+    if (persist) {
+        localStorage.setItem(TOKEN_KEY, token);
+        sessionStorage.removeItem(TOKEN_KEY);
+    } else {
+        sessionStorage.setItem(TOKEN_KEY, token);
+        localStorage.removeItem(TOKEN_KEY);
+    }
 }
 
 export function logout() {
     localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
 }
 
 // 기관 코드 확인
@@ -90,7 +98,7 @@ export function signup({ institutionCode, name, phone, email, password, role, ag
 }
 
 // 로그인
-export function login({ institutionCode, email, password }) {
+export function login({ institutionCode, email, password }, persist = true) {
     if (USE_MOCK) {
         const institution = findInstitutionByCode(institutionCode);
         const user = institution
@@ -100,7 +108,7 @@ export function login({ institutionCode, email, password }) {
             return Promise.reject(new Error('기관 코드, 이메일 또는 비밀번호가 올바르지 않습니다.'));
         }
         const accessToken = `mock-token:${user.id}`;
-        setToken(accessToken);
+        setToken(accessToken, persist);
         return Promise.resolve({
             accessToken,
             userId: user.id,
@@ -116,7 +124,7 @@ export function login({ institutionCode, email, password }) {
         method: 'POST',
         body: JSON.stringify({ institutionCode, email, password }),
     }).then((res) => {
-        setToken(res.accessToken);
+        setToken(res.accessToken, persist);
         return res;
     });
 }

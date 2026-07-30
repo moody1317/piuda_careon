@@ -74,8 +74,8 @@ function ChangePassword() {
                 setShowToast(false);
                 navigate(-1);
             }, 2000);
-        } catch {
-            setError('비밀번호 변경에 실패했습니다. 다시 시도해주세요.');
+        } catch (err) {
+            setError(err.message ?? '비밀번호 변경에 실패했습니다. 다시 시도해주세요.');
         } finally {
             setSubmitting(false);
         }

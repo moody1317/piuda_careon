@@ -6,12 +6,12 @@ import './Alert.css';
 const COMPLETED_VISITS = 28;
 
 const ALERTS = [
-    { id: 1, name: '박영희', age: 77, manager: '김민지', desc: '식사거부 3주 · 우울감↑', level: 'urgent' },
-    { id: 2, name: '이순자', age: 83, manager: '김민지', desc: '반복발화·기억혼동', level: 'urgent' },
-    { id: 3, name: '정대호', age: 79, manager: '김민지', desc: '낙상위험·수면장애', level: 'urgent' },
-    { id: 4, name: '최옥순', age: 75, manager: '김민지', desc: '약 복용 불규칙', level: 'caution' },
-    { id: 5, name: '강순희', age: 81, manager: '김민지', desc: '우울감 표현 증가', level: 'caution' },
-    { id: 6, name: '윤기철', age: 85, manager: '김민지', desc: '식욕 감소 지속', level: 'caution' },
+    { id: 1, name: '박영희', age: 77, desc: '식사거부 3주 · 우울감↑', level: 'urgent' },
+    { id: 2, name: '이순자', age: 83, desc: '반복발화·기억혼동', level: 'urgent' },
+    { id: 3, name: '정대호', age: 79, desc: '낙상위험·수면장애', level: 'urgent' },
+    { id: 4, name: '최옥순', age: 75, desc: '약 복용 불규칙', level: 'caution' },
+    { id: 5, name: '강순희', age: 81, desc: '우울감 표현 증가', level: 'caution' },
+    { id: 6, name: '윤기철', age: 85, desc: '식욕 감소 지속', level: 'caution' },
 ];
 
 function Alert() {
@@ -22,7 +22,7 @@ function Alert() {
         <div className="cg-alert">
             <StatusBar />
 
-            <PageHeader title="알림 홈" subtitle="2026.05.26 화 · 이담당 사회복지사">
+            <PageHeader title="알림 홈" subtitle="2026.05.26 화 · 김민지 생활지원사">
                 <div className="cg-alert-stats">
                     <div className="cg-alert-stat">
                         <p className="cg-alert-stat-value">{urgentAlerts.length}</p>
@@ -51,7 +51,6 @@ function Alert() {
                                 <p className="cg-alert-row-name">
                                     {alert.name} <span>({alert.age}세)</span>
                                 </p>
-                                <p className="cg-alert-row-manager">담당: {alert.manager}</p>
                                 <p className="cg-alert-row-desc urgent">{alert.desc}</p>
                             </div>
                         ))}
@@ -69,7 +68,6 @@ function Alert() {
                                 <p className="cg-alert-row-name">
                                     {alert.name} <span>({alert.age}세)</span>
                                 </p>
-                                <p className="cg-alert-row-manager">담당: {alert.manager}</p>
                                 <p className="cg-alert-row-desc caution">{alert.desc}</p>
                             </div>
                         ))}

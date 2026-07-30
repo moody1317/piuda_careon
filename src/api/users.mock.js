@@ -57,3 +57,5 @@ export const MOCK_USERS = [
         updatedAt: '2024-02-05T00:00:00.000Z',
     },
 ];
+
+export const MOCK_CURRENT_USER_ID = '4';

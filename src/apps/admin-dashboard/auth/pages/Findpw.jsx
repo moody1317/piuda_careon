@@ -40,7 +40,6 @@ function FindPW() {
 
     useEffect(() => {
         if (step !== 'code') return;
-        setTimeLeft(300);
         const timer = setInterval(() => {
             setTimeLeft(prev => {
                 if (prev <= 1) { clearInterval(timer); return 0; }
@@ -68,6 +67,7 @@ function FindPW() {
 
     const handleResend = () => {
         setOtp(['', '', '', '', '', '']);
+        setTimeLeft(300);
         setResendCount(c => c + 1);
         setTimeout(() => otpRefs.current[0]?.focus(), 0);
     };
@@ -109,7 +109,7 @@ function FindPW() {
                             onChange={e => setEmail(e.target.value)}
                         />
                     </div>
-                    <button className="findpw-btn-primary" onClick={() => setStep('code')}>
+                    <button className="findpw-btn-primary" onClick={() => { setTimeLeft(300); setStep('code'); }}>
                         인증 코드 받기
                     </button>
                     <div className="findpw-notice">
