@@ -13,9 +13,11 @@
     "@capacitor/android": "^8.4.1",
     "@capacitor/cli": "^8.4.1",
     "@capacitor/core": "^8.4.1",
+    "@capacitor/filesystem": "^8.1.2",
     "@capacitor/ios": "^8.4.1",
     "bootstrap-icons": "^1.13.1",
     "capacitor-voice-recorder": "^7.0.6",
+    "crypto-js": "^4.2.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-router-dom": "^7.18.0"

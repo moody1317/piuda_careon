@@ -17,6 +17,7 @@ function AiDraftReview() {
     const [isEditing, setIsEditing] = useState(false);
     const [summary, setSummary] = useState(DEFAULT_SUMMARY);
     const [tags, setTags] = useState([]);
+    const [changes, setChanges] = useState([]);
     const [showToast, setShowToast] = useState(false);
     const [saving, setSaving] = useState(false);
 
@@ -26,9 +27,12 @@ function AiDraftReview() {
             .then((c) => {
                 setSummary(c.workerFinalNote ?? c.aiSummary ?? DEFAULT_SUMMARY);
                 setTags(c.aiTags ?? []);
+                setChanges(c.changes ?? []);
             })
             .catch(() => {});
     }, [consultationId]);
+
+    const concerningChanges = changes.filter((c) => c.type !== 'normal');
 
     const handleSave = async () => {
         if (saving) return;
@@ -91,15 +95,17 @@ function AiDraftReview() {
                     )}
                 </div>
 
-                <div className="cg-draft-alert">
-                    <p className="cg-draft-alert-title">
-                        <i className="bi bi-exclamation-triangle-fill" /> AI 이상징후 감지
-                    </p>
-                    <p className="cg-draft-alert-text">
-                        식사 거부 3주 연속 · 우울감 표현 증가 추이<br />
-                        → 사회복지사 검토 권고
-                    </p>
-                </div>
+                {concerningChanges.length > 0 && (
+                    <div className="cg-draft-alert">
+                        <p className="cg-draft-alert-title">
+                            <i className="bi bi-exclamation-triangle-fill" /> AI 이상징후 감지
+                        </p>
+                        <p className="cg-draft-alert-text">
+                            {concerningChanges.map((c) => `${c.title} (${c.description})`).join(' · ')}<br />
+                            → 사회복지사 검토 권고
+                        </p>
+                    </div>
+                )}
 
                 <button className="cg-draft-save-button" type="button" onClick={handleSave} disabled={saving}>
                     {saving ? '저장 중...' : '최종 검토 완료 · 저장'}

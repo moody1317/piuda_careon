@@ -15,6 +15,11 @@ export const MOCK_CONSULTATIONS = [
         aiSummaryPreview: '식사 못 드신다 하셨으며 기분이 많이 처지고...',
         workerFinalNote: '어르신 식사 문제 지속. 가족 연계 필요성 체크.',
         socialWorkerOpinion: '식사 거부와 외로움 표현 동시 증가. 가족 연락 및 지역사회 연계 프로그램 참여 검토 권고.',
+        changes: [
+            { title: '식사 거부', description: '3주 연속 지속 → 악화', type: 'increase' },
+            { title: '우울감 표현', description: '지난주 대비 증가', type: 'increase' },
+            { title: '혈압', description: '정상 유지', type: 'normal' },
+        ],
     },
     {
         id: '2',
@@ -31,6 +36,10 @@ export const MOCK_CONSULTATIONS = [
         aiSummaryPreview: '오늘도 예전 이야기 반복하셨으며 이름을...',
         workerFinalNote: '반복 발화 및 기억 혼돈 증상 재확인.',
         socialWorkerOpinion: '반복 발화·기억 혼동 증가 추세. 인지기능 선별검사 연계 검토 필요.',
+        changes: [
+            { title: '반복 발화', description: '지난 상담 대비 빈도 증가', type: 'increase' },
+            { title: '기억력', description: '저하 추세 지속', type: 'decrease' },
+        ],
     },
     {
         id: '3',
@@ -41,12 +50,16 @@ export const MOCK_CONSULTATIONS = [
         audioUrl: null,
         status: 'SPECIAL_NOTE',
         riskScore: 70,
-        aiTags: ['낙상위험', '병원동행필요'],
+        aiTags: ['낙상위험', '수면문제'],
         sttText: '어제 화장실 가다가 넘어질 뻔했다고 하심. 요즘 밤에 잠도 잘 못 잔다고 하심.',
         aiSummary: '정대호 어르신은 어제 낙상 위험 상황이 있었음을 언급하셨고, 수면장애도 지속되고 있음.',
         aiSummaryPreview: '어제 화장실 가다 넘어질 뻔 했다고 하심...',
         workerFinalNote: null,
         socialWorkerOpinion: '낙상 위험 재확인 필요. 안전 손잡이 설치 등 환경 점검 권고.',
+        changes: [
+            { title: '낙상 위험', description: '이번 상담에서 처음 언급', type: 'increase' },
+            { title: '수면', description: '지난주 대비 악화', type: 'decrease' },
+        ],
     },
     {
         id: '4',
@@ -57,12 +70,16 @@ export const MOCK_CONSULTATIONS = [
         audioUrl: null,
         status: 'NEED_REVIEW',
         riskScore: 45,
-        aiTags: ['약복용'],
+        aiTags: ['복약문제'],
         sttText: '어제 저녁 약을 깜빡하셨다고 하심. 오늘 아침 약은 챙겨 드셨음.',
         aiSummary: '최옥순 어르신은 어제 저녁 복약을 놓치신 것으로 확인됨.',
         aiSummaryPreview: '약을 어제 저녁에 깜빡하셨다고 하심...',
         workerFinalNote: null,
         socialWorkerOpinion: null,
+        changes: [
+            { title: '복약 이행', description: '전날 저녁 1회 누락', type: 'decrease' },
+            { title: '아침 복약', description: '정상 이행', type: 'normal' },
+        ],
     },
     {
         id: '5',
@@ -79,6 +96,10 @@ export const MOCK_CONSULTATIONS = [
         aiSummaryPreview: '요즘 들어 기분이 처진다고 하셨으며...',
         workerFinalNote: null,
         socialWorkerOpinion: null,
+        changes: [
+            { title: '우울감 표현', description: '지난 상담 대비 증가', type: 'increase' },
+            { title: '사회적 교류', description: '이웃과의 왕래 감소', type: 'decrease' },
+        ],
     },
     {
         id: '6',
@@ -95,6 +116,10 @@ export const MOCK_CONSULTATIONS = [
         aiSummaryPreview: '건강 상태 양호. 혈압 정상 범위 확인...',
         workerFinalNote: '특이사항 없음. 정기 방문 지속.',
         socialWorkerOpinion: null,
+        changes: [
+            { title: '혈압', description: '정상 범위 유지', type: 'normal' },
+            { title: '전반적 건강 상태', description: '특이사항 없음', type: 'normal' },
+        ],
     },
     {
         id: '7',
@@ -111,6 +136,10 @@ export const MOCK_CONSULTATIONS = [
         aiSummaryPreview: '전반적으로 양호. 이웃과 잘 지낸다고 하심...',
         workerFinalNote: '특이사항 없음.',
         socialWorkerOpinion: null,
+        changes: [
+            { title: '사회적 교류', description: '이웃과 원활히 지냄', type: 'normal' },
+            { title: '전반적 건강 상태', description: '특이사항 없음', type: 'normal' },
+        ],
     },
     {
         id: '8',
@@ -127,6 +156,10 @@ export const MOCK_CONSULTATIONS = [
         aiSummaryPreview: '식욕이 없다고 하셨으며 점심을 조금...',
         workerFinalNote: '식욕 감소 추이 지속 확인.',
         socialWorkerOpinion: null,
+        changes: [
+            { title: '식욕', description: '지속적 감소 추세', type: 'decrease' },
+            { title: '체중', description: '변화 여부 확인 필요', type: 'normal' },
+        ],
     },
     {
         id: '9',
@@ -143,6 +176,10 @@ export const MOCK_CONSULTATIONS = [
         aiSummaryPreview: '활력징후 모두 정상. 기분 좋다고 하심...',
         workerFinalNote: '특이사항 없음.',
         socialWorkerOpinion: null,
+        changes: [
+            { title: '활력징후', description: '모두 정상', type: 'normal' },
+            { title: '정서 상태', description: '양호', type: 'normal' },
+        ],
     },
     {
         id: '10',
@@ -159,5 +196,8 @@ export const MOCK_CONSULTATIONS = [
         aiSummaryPreview: '밤에 잠을 잘 못 잔다고 하셨으며...',
         workerFinalNote: null,
         socialWorkerOpinion: null,
+        changes: [
+            { title: '수면', description: '불규칙 패턴 지속', type: 'decrease' },
+        ],
     },
 ];

@@ -3,19 +3,12 @@ import './CounselingModal.css';
 import useLockBodyScroll from '../hooks/useLockBodyScroll';
 import { getConsultation, updateConsultation } from '../../../api/consultations';
 
-// 이전 상담 대비 변화는 아직 백엔드 필드가 없어 화면 시연용으로 고정 표시
-const CHANGES = [
-    { label: '식사 거부',   detail: '3주 연속 지속 → 악화', type: 'alert' },
-    { label: '우울감 표현', detail: '지난주 대비 증가',      type: 'alert' },
-    { label: '혈압',        detail: '정상 유지',             type: 'primary' },
-    { label: '약 복용',     detail: '정상 이행',             type: 'primary' },
-];
-
 function CounselingModal({ record, onClose }) {
     useLockBodyScroll();
 
     const [detail, setDetail] = useState(null);
     const [tags, setTags] = useState([]);
+    const [changes, setChanges] = useState([]);
     const [opinion, setOpinion] = useState('');
     const [saving, setSaving] = useState(false);
 
@@ -23,6 +16,7 @@ function CounselingModal({ record, onClose }) {
         getConsultation(record.id).then((c) => {
             setDetail(c);
             setTags(c.aiTags ?? []);
+            setChanges(c.changes ?? []);
             setOpinion(c.socialWorkerOpinion ?? '');
         }).catch(() => {});
     }, [record.id]);
@@ -105,10 +99,10 @@ function CounselingModal({ record, onClose }) {
                         <div className="cm-section">
                             <p className="cm-section-label">이전 상담 대비 변화</p>
                             <div className="cm-changes">
-                                {CHANGES.map((c, i) => (
-                                    <div key={i} className={`cm-change cm-change--${c.type}`}>
-                                        <p className="cm-change-label">{c.label}</p>
-                                        <p className="cm-change-detail">{c.detail}</p>
+                                {changes.map((c, i) => (
+                                    <div key={i} className={`cm-change cm-change--${c.type === 'normal' ? 'primary' : 'alert'}`}>
+                                        <p className="cm-change-label">{c.title}</p>
+                                        <p className="cm-change-detail">{c.description}</p>
                                     </div>
                                 ))}
                             </div>

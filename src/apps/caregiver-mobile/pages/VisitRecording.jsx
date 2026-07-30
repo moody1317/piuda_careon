@@ -1,13 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { VoiceRecorder } from 'capacitor-voice-recorder';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import CryptoJS from 'crypto-js';
 import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
 import Toast from '../ui/Toast';
+import { processConsultation } from '../../../api/consultations';
+import { getCurrentUser } from '../../../api/users';
 import './VisitRecording.css';
 
 const DEFAULT_CLIENT = { name: '박영희' };
 const WAVEFORM_BARS = Array.from({ length: 28 }, (_, i) => i);
+
+const MIME_EXTENSIONS = {
+    'audio/aac': 'aac',
+    'audio/mp4': 'm4a',
+    'audio/webm': 'webm',
+};
 
 function formatTime(totalSeconds) {
     const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
@@ -15,31 +26,153 @@ function formatTime(totalSeconds) {
     return `${minutes}:${seconds}`;
 }
 
+function extensionFor(mimeType) {
+    const key = Object.keys(MIME_EXTENSIONS).find((prefix) => mimeType?.startsWith(prefix));
+    return key ? MIME_EXTENSIONS[key] : 'audio';
+}
+
+function base64ToFile(base64, mimeType, filename) {
+    const bytes = atob(base64);
+    const buffer = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i += 1) {
+        buffer[i] = bytes.charCodeAt(i);
+    }
+    return new File([buffer], filename, { type: mimeType });
+}
+
 function VisitRecording() {
     const navigate = useNavigate();
     const location = useLocation();
     const client = location.state?.client ?? DEFAULT_CLIENT;
 
-    const [isRecording, setIsRecording] = useState(true);
-    const [elapsedSeconds, setElapsedSeconds] = useState(154);
+    // phase: starting | recording | paused | uploading | failed
+    const [phase, setPhase] = useState('starting');
+    const [elapsedSeconds, setElapsedSeconds] = useState(0);
     const [showToast, setShowToast] = useState(false);
+    const [uploadError, setUploadError] = useState('');
+
+    const consultedAtRef = useRef(null);
+    const encryptionKeyRef = useRef(null);
+    const localPathRef = useRef(null);
+    const pendingAudioRef = useRef(null);
 
     useEffect(() => {
-        if (!isRecording) return undefined;
+        let cancelled = false;
+
+        async function begin() {
+            const permission = await VoiceRecorder.hasAudioRecordingPermission();
+            if (!permission.value) {
+                const requested = await VoiceRecorder.requestAudioRecordingPermission();
+                if (!requested.value) {
+                    if (!cancelled) {
+                        setUploadError('마이크 권한이 필요합니다.');
+                        setPhase('failed');
+                    }
+                    return;
+                }
+            }
+            await VoiceRecorder.startRecording();
+            if (cancelled) return;
+            consultedAtRef.current = new Date().toISOString();
+            setPhase('recording');
+        }
+
+        begin();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (phase !== 'recording') return undefined;
         const timer = setInterval(() => {
             setElapsedSeconds((prev) => prev + 1);
         }, 1000);
         return () => clearInterval(timer);
-    }, [isRecording]);
+    }, [phase]);
 
-    const handleComplete = () => {
-        setIsRecording(false);
-        setShowToast(true);
-        setTimeout(() => {
-            setShowToast(false);
-            navigate('/ai-draft-review', { state: { client } });
-        }, 5000);
+    const handleTogglePause = async () => {
+        if (phase === 'recording') {
+            await VoiceRecorder.pauseRecording();
+            setPhase('paused');
+        } else if (phase === 'paused') {
+            await VoiceRecorder.resumeRecording();
+            setPhase('recording');
+        }
     };
+
+    const handleCancel = async () => {
+        if (phase === 'recording' || phase === 'paused') {
+            await VoiceRecorder.stopRecording();
+        }
+        navigate(-1);
+    };
+
+    // 로컬에 AES로 암호화 저장된 파일을 서버로 업로드 시도. 성공 시 로컬 파일 삭제, 실패 시 파일을 보관해 재시도할 수 있게 한다.
+    const attemptUpload = async (base64Audio, mimeType) => {
+        setPhase('uploading');
+        setUploadError('');
+        try {
+            const file = base64ToFile(base64Audio, mimeType, `visit-${Date.now()}.${extensionFor(mimeType)}`);
+            const caregiver = await getCurrentUser();
+            const result = await processConsultation({
+                caregiverId: caregiver.id,
+                recipientId: client.clientId,
+                consultedAt: consultedAtRef.current,
+                file,
+            });
+
+            await Filesystem.deleteFile({ path: localPathRef.current, directory: Directory.Data });
+            pendingAudioRef.current = null;
+            setShowToast(true);
+            setTimeout(() => {
+                setShowToast(false);
+                navigate('/ai-draft-review', { state: { log: result } });
+            }, 1500);
+        } catch (error) {
+            setUploadError(error.message);
+            setPhase('failed');
+        }
+    };
+
+    const handleComplete = async () => {
+        if (phase !== 'recording' && phase !== 'paused') return;
+
+        const { value } = await VoiceRecorder.stopRecording();
+        const { recordDataBase64, mimeType } = value;
+
+        const key = CryptoJS.lib.WordArray.random(256 / 8).toString();
+        const encrypted = CryptoJS.AES.encrypt(recordDataBase64, key).toString();
+        const localPath = `recordings/${Date.now()}.enc`;
+
+        await Filesystem.writeFile({
+            path: localPath,
+            data: encrypted,
+            directory: Directory.Data,
+            encoding: Encoding.UTF8,
+            recursive: true,
+        });
+
+        encryptionKeyRef.current = key;
+        localPathRef.current = localPath;
+        pendingAudioRef.current = mimeType;
+
+        await attemptUpload(recordDataBase64, mimeType);
+    };
+
+    // 재시도: 로컬에 암호화 보관된 파일을 다시 읽어 복호화한 뒤 업로드를 다시 시도한다.
+    const handleRetry = async () => {
+        const { value } = await Filesystem.readFile({
+            path: localPathRef.current,
+            directory: Directory.Data,
+            encoding: Encoding.UTF8,
+        });
+        const decrypted = CryptoJS.AES.decrypt(value, encryptionKeyRef.current).toString(CryptoJS.enc.Utf8);
+        await attemptUpload(decrypted, pendingAudioRef.current);
+    };
+
+    const isActive = phase === 'recording' || phase === 'paused';
 
     return (
         <div className="cg-rec">
@@ -51,9 +184,9 @@ function VisitRecording() {
                 <p className="cg-rec-timer">{formatTime(elapsedSeconds)}</p>
 
                 <div className="cg-rec-status">
-                    <span className={`cg-rec-status-dot${isRecording ? ' active' : ''}`} />
-                    <span className={`cg-rec-status-text${isRecording ? ' active' : ''}`}>
-                        {isRecording ? '녹음 중' : '일시정지'}
+                    <span className={`cg-rec-status-dot${phase === 'recording' ? ' active' : ''}`} />
+                    <span className={`cg-rec-status-text${phase === 'recording' ? ' active' : ''}`}>
+                        {phase === 'paused' ? '일시정지' : '녹음 중'}
                     </span>
                 </div>
 
@@ -61,14 +194,15 @@ function VisitRecording() {
                     <button
                         type="button"
                         className="cg-rec-circle-button"
-                        onClick={() => setIsRecording((prev) => !prev)}
+                        onClick={handleTogglePause}
+                        disabled={!isActive}
                     >
                         <span className="cg-rec-circle-inner">
-                            <i className={`bi ${isRecording ? 'bi-stop-fill' : 'bi-mic-fill'}`} />
+                            <i className={`bi ${phase === 'recording' ? 'bi-pause-fill' : 'bi-mic-fill'}`} />
                         </span>
                     </button>
                     <p className="cg-rec-control-caption">
-                        {isRecording ? '탭하여 녹음 종료' : '탭하여 녹음 시작'}
+                        {phase === 'recording' ? '탭하여 일시정지' : '탭하여 재개'}
                     </p>
                 </div>
 
@@ -82,7 +216,18 @@ function VisitRecording() {
                     </p>
                 </div>
 
-                <div className={`cg-rec-waveform${isRecording ? ' active' : ''}`}>
+                {phase === 'failed' && (
+                    <div className="cg-rec-notice">
+                        <p className="cg-rec-notice-title">
+                            <i className="bi bi-exclamation-triangle" /> 업로드 실패
+                        </p>
+                        <p className="cg-rec-notice-text">
+                            {uploadError || '서버 업로드에 실패했습니다.'} 녹음 파일은 기기에 암호화되어 보관 중입니다.
+                        </p>
+                    </div>
+                )}
+
+                <div className={`cg-rec-waveform${phase === 'recording' ? ' active' : ''}`}>
                     {WAVEFORM_BARS.map((bar) => (
                         <span
                             key={bar}
@@ -92,10 +237,21 @@ function VisitRecording() {
                     ))}
                 </div>
 
-                <button className="cg-rec-complete-button" type="button" onClick={handleComplete}>
-                    녹음 완료
-                </button>
-                <button className="cg-rec-cancel-button" type="button" onClick={() => navigate(-1)}>
+                {phase === 'failed' ? (
+                    <button className="cg-rec-complete-button" type="button" onClick={handleRetry}>
+                        다시 시도
+                    </button>
+                ) : (
+                    <button
+                        className="cg-rec-complete-button"
+                        type="button"
+                        onClick={handleComplete}
+                        disabled={!isActive}
+                    >
+                        {phase === 'uploading' ? '처리 중...' : '녹음 완료'}
+                    </button>
+                )}
+                <button className="cg-rec-cancel-button" type="button" onClick={handleCancel}>
                     취소
                 </button>
             </div>
