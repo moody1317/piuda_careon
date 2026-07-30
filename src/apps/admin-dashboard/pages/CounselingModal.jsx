@@ -57,7 +57,7 @@ function CounselingModal({ record, onClose }) {
                                 <span className="cm-avatar">{record.avatar}</span>
                                 <div>
                                     <p className="cm-profile-name">{record.name} ({record.age}세 · 여)</p>
-                                    <p className="cm-profile-info">청주시 흥덕구 사직동 · 돌봄 2등급</p>
+                                    <p className="cm-profile-info">청주시 흥덕구 사직동</p>
                                 </div>
                             </div>
                             <span className="cm-urgent-badge">긴급 관리 대상</span>

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
-import { getClient, CARE_LEVEL_LABELS } from '../../../api/clients';
+import { getClient } from '../../../api/clients';
 import './ClientDetail.css';
 
 const DEFAULT_CLIENT = {
@@ -11,7 +11,6 @@ const DEFAULT_CLIENT = {
     name: '박영희',
     age: 77,
     gender: '여',
-    careLevel: '2등급',
     tenure: '3년째',
     tags: ['식사 거부 (2회)', '수면 문제', '약 복용 확인'],
 };
@@ -68,7 +67,7 @@ function ClientDetail() {
                             {client.name} ({client.age}세 · {client.gender ?? DEFAULT_CLIENT.gender})
                         </p>
                         <p className="cg-cd-meta">
-                            돌봄 {fullClient?.careLevel ? CARE_LEVEL_LABELS[fullClient.careLevel] : (client.careLevel ?? DEFAULT_CLIENT.careLevel)} · 담당 {client.tenure ?? DEFAULT_CLIENT.tenure}
+                            담당 {client.tenure ?? DEFAULT_CLIENT.tenure}
                         </p>
                     </div>
                 </div>

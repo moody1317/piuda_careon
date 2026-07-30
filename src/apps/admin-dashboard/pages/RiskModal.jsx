@@ -86,7 +86,7 @@ function RiskModal({ record, onClose }) {
                         <span className="rm-avatar">{record.avatar}</span>
                         <div>
                             <p className="rm-profile-name">{record.name} ({record.age}세 · 여)</p>
-                            <p className="rm-profile-info">청주시 흥덕구 사직동 45 · 돌봄 2등급 · 생활지원사: {record.manager}</p>
+                            <p className="rm-profile-info">청주시 흥덕구 사직동 45 · 생활지원사: {record.manager}</p>
                         </div>
                     </div>
                     <div className="rm-profile-badges">

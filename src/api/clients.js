@@ -13,14 +13,6 @@ export const STATUS_META = {
     SPECIAL_NOTE: { key: 'urgent', label: STATUS_LABELS.SPECIAL_NOTE },
 };
 
-export const CARE_LEVEL_LABELS = {
-    LEVEL1: '1등급',
-    LEVEL2: '2등급',
-    LEVEL3: '3등급',
-    LEVEL4: '4등급',
-    LEVEL5: '5등급',
-};
-
 async function request(path, options = {}) {
     const res = await fetch(`${API_BASE_URL}${path}`, {
         headers: { 'Content-Type': 'application/json', ...options.headers },
@@ -53,7 +45,7 @@ export function getRecipientsByCaregiver(caregiverId) {
 }
 
 // 대상자 등록
-export function createClient({ name, age, gender, address, careLevel, mainDisease, phone, familyContactName, familyRelation, familyContactPhone, caregiverId }) {
+export function createClient({ name, age, gender, address, mainDisease, phone, familyContactName, familyRelation, familyContactPhone, caregiverId }) {
     if (USE_MOCK) {
         const caregiver = MOCK_CLIENTS.find(c => c.caregiverId === caregiverId);
         const client = {
@@ -63,7 +55,6 @@ export function createClient({ name, age, gender, address, careLevel, mainDiseas
             age,
             gender,
             address,
-            careLevel,
             mainDisease,
             phone,
             familyContactName,
@@ -76,7 +67,7 @@ export function createClient({ name, age, gender, address, careLevel, mainDiseas
     }
     return request('/care-recipients', {
         method: 'POST',
-        body: JSON.stringify({ name, age, gender, address, careLevel, mainDisease, phone, familyContactName, familyRelation, familyContactPhone, caregiverId }),
+        body: JSON.stringify({ name, age, gender, address, mainDisease, phone, familyContactName, familyRelation, familyContactPhone, caregiverId }),
     });
 }
 
