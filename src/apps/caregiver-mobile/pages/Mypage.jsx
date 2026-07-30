@@ -5,6 +5,7 @@ import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
 import Modal from '../ui/Modal';
 import { getCurrentUser, ROLE_LABELS } from '../../../api/users';
+import { logout } from '../../../api/auth';
 import { getInstitution } from '../../../api/institutions';
 import './Mypage.css';
 
@@ -103,7 +104,11 @@ function Mypage() {
                     ))}
                 </div>
 
-                <button className="cg-my-logout-button" type="button" onClick={() => navigate('/login')}>
+                <button
+                    className="cg-my-logout-button"
+                    type="button"
+                    onClick={() => { logout(); navigate('/login'); }}
+                >
                     로그아웃
                 </button>
             </div>

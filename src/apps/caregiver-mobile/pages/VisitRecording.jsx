@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { VoiceRecorder } from 'capacitor-voice-recorder';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Preferences } from '@capacitor/preferences';
 import CryptoJS from 'crypto-js';
 import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
@@ -13,6 +14,11 @@ import './VisitRecording.css';
 
 const DEFAULT_CLIENT = { name: '박영희' };
 const WAVEFORM_BARS = Array.from({ length: 28 }, (_, i) => i);
+
+// 서버 업로드에 실패한 녹음을 기기에 암호화 보관할 때 쓰는 저장 키.
+// 앱이 종료되었다 다시 켜져도 이 값으로 복호화 키/파일 경로를 복원해 재시도할 수 있다.
+// 한 번에 하나의 미전송 녹음만 보관한다고 가정한다 (MVP 범위).
+const PENDING_RECORDING_KEY = 'careon_pending_recording';
 
 const MIME_EXTENSIONS = {
     'audio/aac': 'aac',
@@ -55,11 +61,28 @@ function VisitRecording() {
     const encryptionKeyRef = useRef(null);
     const localPathRef = useRef(null);
     const pendingAudioRef = useRef(null);
+    const recipientIdRef = useRef(client.clientId ?? null);
 
     useEffect(() => {
         let cancelled = false;
 
         async function begin() {
+            // 기기에 아직 서버로 못 보낸 암호화 녹음이 있으면(앱 종료/크래시 등으로 중단된 경우),
+            // 새 녹음을 시작하지 않고 그 녹음의 재시도 화면부터 보여준다.
+            const { value } = await Preferences.get({ key: PENDING_RECORDING_KEY });
+            if (value) {
+                if (cancelled) return;
+                const pending = JSON.parse(value);
+                localPathRef.current = pending.localPath;
+                encryptionKeyRef.current = pending.encryptionKey;
+                pendingAudioRef.current = pending.mimeType;
+                consultedAtRef.current = pending.consultedAt;
+                recipientIdRef.current = pending.recipientId;
+                setUploadError('이전에 저장하지 못한 녹음이 있습니다. 다시 업로드해 주세요.');
+                setPhase('failed');
+                return;
+            }
+
             const permission = await VoiceRecorder.hasAudioRecordingPermission();
             if (!permission.value) {
                 const requested = await VoiceRecorder.requestAudioRecordingPermission();
@@ -109,7 +132,8 @@ function VisitRecording() {
         navigate(-1);
     };
 
-    // 로컬에 AES로 암호화 저장된 파일을 서버로 업로드 시도. 성공 시 로컬 파일 삭제, 실패 시 파일을 보관해 재시도할 수 있게 한다.
+    // 로컬에 AES로 암호화 저장된 파일을 서버로 업로드 시도.
+    // 성공 시 로컬 파일 + 영속 저장된 재시도 정보를 모두 삭제, 실패 시 그대로 보관해 재시도할 수 있게 한다.
     const attemptUpload = async (base64Audio, mimeType) => {
         setPhase('uploading');
         setUploadError('');
@@ -118,12 +142,13 @@ function VisitRecording() {
             const caregiver = await getCurrentUser();
             const result = await processConsultation({
                 caregiverId: caregiver.id,
-                recipientId: client.clientId,
+                recipientId: recipientIdRef.current,
                 consultedAt: consultedAtRef.current,
                 file,
             });
 
             await Filesystem.deleteFile({ path: localPathRef.current, directory: Directory.Data });
+            await Preferences.remove({ key: PENDING_RECORDING_KEY });
             pendingAudioRef.current = null;
             setShowToast(true);
             setTimeout(() => {
@@ -157,6 +182,17 @@ function VisitRecording() {
         encryptionKeyRef.current = key;
         localPathRef.current = localPath;
         pendingAudioRef.current = mimeType;
+
+        await Preferences.set({
+            key: PENDING_RECORDING_KEY,
+            value: JSON.stringify({
+                localPath,
+                encryptionKey: key,
+                mimeType,
+                recipientId: recipientIdRef.current,
+                consultedAt: consultedAtRef.current,
+            }),
+        });
 
         await attemptUpload(recordDataBase64, mimeType);
     };

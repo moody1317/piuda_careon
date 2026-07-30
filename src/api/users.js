@@ -1,9 +1,9 @@
-import { MOCK_USERS, MOCK_CURRENT_USER_ID } from './users.mock';
+import { MOCK_USERS } from './users.mock';
+import { me } from './auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
-// 백엔드 연동 전까지 더미데이터 사용. 연동 완료 후 false로 바꾸고
-// 이 파일의 USE_MOCK 분기 + users.mock.js를 제거하면 됩니다.
+// 백엔드 연동 전까지 더미데이터 사용. 연동 완료 후 false로 바꾸고  이 파일의 USE_MOCK 분기 + users.mock.js 제거
 const USE_MOCK = true;
 
 export const ROLE_LABELS = {
@@ -34,7 +34,7 @@ function sanitize(user) {
     return safe;
 }
 
-// 사용자 목록 조회 (institutionId로 소속 기관 필터링 가능)
+// 사용자 목록 조회
 export function getUsers({ institutionId } = {}) {
     if (USE_MOCK) {
         const list = institutionId
@@ -56,9 +56,8 @@ export function getUser(id) {
 }
 
 // 현재 로그인한 사용자 조회
-// TODO: 로그인/세션 연동 후 세션 기반 조회로 교체
 export function getCurrentUser() {
-    return getUser(MOCK_CURRENT_USER_ID);
+    return me().then((session) => getUser(session.userId));
 }
 
 // 사용자(계정) 등록

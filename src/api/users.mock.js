@@ -1,5 +1,4 @@
 // 백엔드 연동 전까지 사용하는 더미데이터.
-// 연동 완료 후 이 파일과 users.js의 USE_MOCK 분기를 함께 제거하면 됩니다.
 export const MOCK_USERS = [
     {
         id: '1',
@@ -58,7 +57,3 @@ export const MOCK_USERS = [
         updatedAt: '2024-02-05T00:00:00.000Z',
     },
 ];
-
-// 로그인/세션 연동 전까지 caregiver-mobile 앱에서 "로그인된 사용자"로 취급할 계정.
-// 실제 로그인 연동 후 getCurrentUser()를 세션 기반 조회로 교체하면서 제거하세요.
-export const MOCK_CURRENT_USER_ID = '2';

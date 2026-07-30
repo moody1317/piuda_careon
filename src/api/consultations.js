@@ -1,4 +1,6 @@
 import { MOCK_CONSULTATIONS } from './consultations.mock';
+import { MOCK_CLIENTS } from './clients.mock';
+import { MOCK_USERS } from './users.mock';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
@@ -89,7 +91,26 @@ export function uploadAudio(id, file) {
 // 방문 상담 녹음 → STT/LLM 일괄 처리
 export function processConsultation({ caregiverId, recipientId, consultedAt, file }) {
     if (USE_MOCK) {
-        return Promise.reject(new Error('목업 모드에서는 지원하지 않는 기능입니다.'));
+        const recipient = MOCK_CLIENTS.find((c) => c.id === recipientId);
+        const caregiver = MOCK_USERS.find((u) => u.id === caregiverId);
+        const consultation = {
+            id: String(Date.now()),
+            recipientName: recipient?.name ?? '알 수 없음',
+            recipientAge: recipient?.age ?? null,
+            caregiverName: recipient?.caregiverName ?? caregiver?.name ?? '',
+            consultedAt,
+            audioUrl: `mock://${file?.name ?? 'audio'}`,
+            status: 'NEED_REVIEW',
+            riskScore: 55,
+            aiTags: ['검토필요', '식사감소', '수면문제'],
+            sttText: '요즘 밥맛이 없고 잠을 잘 못 잔다고 말씀하셨습니다.',
+            aiSummary: '대상자는 최근 식사량 감소와 수면 문제를 호소하였다. 지속적인 관찰과 사회복지사의 확인이 필요하다.',
+            aiSummaryPreview: '식사량 감소 및 수면 문제 확인 필요',
+            workerFinalNote: null,
+            socialWorkerOpinion: null,
+        };
+        MOCK_CONSULTATIONS.push(consultation);
+        return Promise.resolve(consultation);
     }
     const formData = new FormData();
     formData.append('caregiverId', caregiverId);

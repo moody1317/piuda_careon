@@ -45,11 +45,11 @@ function CaseDetail() {
     const basicInfo = fullClient
         ? [
             { label: '주소', value: fullClient.address ?? '-' },
-            { label: '주요 질환', value: '고혈압, 당뇨' },
+            { label: '주요 질환', value: fullClient.mainDisease ?? '-' },
             { label: '연락처', value: fullClient.phone ?? '-' },
-            { label: '보호자명', value: fullClient.guardian_name ?? '-' },
-            { label: '보호자 연락처', value: fullClient.guardian_phone ?? '-' },
-            { label: '보호자 관계', value: fullClient.guardian_relation ?? '-' },
+            { label: '보호자명', value: fullClient.familyContactName ?? '-' },
+            { label: '보호자 연락처', value: fullClient.familyContactPhone ?? '-' },
+            { label: '보호자 관계', value: fullClient.familyRelation ?? '-' },
         ]
         : FALLBACK_BASIC_INFO;
 
