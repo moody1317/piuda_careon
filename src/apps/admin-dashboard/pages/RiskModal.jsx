@@ -1,5 +1,8 @@
+import { useState, useEffect } from 'react';
 import './RiskModal.css';
 import useLockBodyScroll from '../hooks/useLockBodyScroll';
+import { getRiskHistories } from '../../../api/riskHistories';
+import { STATUS_LABELS } from '../../../api/status';
 
 const SUBSCORES = [
     { label: '식사 거부',   score: 38, max: 40 },
@@ -9,13 +12,9 @@ const SUBSCORES = [
     { label: '낙상 위험',   score: 4,  max: 10 },
 ];
 
-const TIMELINE = [
-    { date: '05.26', desc: '식사 거부 4회. 우울감 표현 반복. \'외롭다\' 발화 ↑', status: '악화' },
-    { date: '05.19', desc: '식사 거부 3회. 전주 대비 우울감 표현 증가.',        status: '악화' },
-    { date: '05.12', desc: '수면 불편 언급. 혈압 120/80 정상. 반복발화 시작.', status: '주의' },
-    { date: '05.05', desc: '전반적 양호. 식욕 약간 감소 언급.',               status: '주의' },
-    { date: '04.28', desc: '건강 양호. 특이사항 없음.',                       status: '정상' },
-    { date: '04.21', desc: '건강 양호. 이웃과 어울림 확인.',                   status: '정상' },
+// 위험 이력 조회에 실패하거나 연결된 대상자/상담일지가 없을 때만 사용하는 예시 데이터
+const FALLBACK_TIMELINE = [
+    { date: '05.22', desc: '반복 발화 시작 단계.', status: 'NEED_REVIEW' },
 ];
 
 const AI_SUMMARIES = [
@@ -25,9 +24,13 @@ const AI_SUMMARIES = [
 ];
 
 function timelineType(status) {
-    if (status === '악화') return 'alert';
-    if (status === '주의') return 'warn';
+    if (status === 'SPECIAL_NOTE') return 'alert';
+    if (status === 'NEED_REVIEW') return 'warn';
     return 'primary';
+}
+
+function formatDate(isoString) {
+    return isoString.slice(5, 10).replace('-', '.');
 }
 
 function severityType(score) {
@@ -46,6 +49,21 @@ function RiskModal({ record, onClose }) {
     useLockBodyScroll();
 
     const type = severityType(record.score);
+    const [timeline, setTimeline] = useState(FALLBACK_TIMELINE);
+
+    useEffect(() => {
+        if (!record.recipientId && !record.consultationId) return;
+        getRiskHistories({ recipientId: record.recipientId, consultationId: record.consultationId })
+            .then((list) => {
+                if (list.length === 0) return;
+                setTimeline(list.map((h) => ({
+                    date: formatDate(h.created_at),
+                    desc: h.reason ?? '-',
+                    status: h.new_status,
+                })));
+            })
+            .catch(() => {});
+    }, [record.recipientId, record.consultationId]);
 
     return (
         <div className="rm-overlay" onClick={onClose}>
@@ -125,18 +143,18 @@ function RiskModal({ record, onClose }) {
                         <p className="rm-section-sub">최근 6주 변화 추이</p>
 
                         <div className="rm-timeline">
-                            {TIMELINE.map((t, i) => {
+                            {timeline.map((t, i) => {
                                 const tType = timelineType(t.status);
                                 return (
                                     <div key={i} className="rm-timeline-item">
                                         <div className="rm-timeline-rail">
                                             <span className={`rm-timeline-dot rm-timeline-dot--${tType}`} />
-                                            {i !== TIMELINE.length - 1 && <span className="rm-timeline-line" />}
+                                            {i !== timeline.length - 1 && <span className="rm-timeline-line" />}
                                         </div>
                                         <div className="rm-timeline-content">
                                             <div className="rm-timeline-top">
                                                 <span className="rm-timeline-date">{t.date}</span>
-                                                <span className={`rm-badge rm-badge--${tType}`}>{t.status}</span>
+                                                <span className={`rm-badge rm-badge--${tType}`}>{STATUS_LABELS[t.status] ?? t.status}</span>
                                             </div>
                                             <p className="rm-timeline-desc">{t.desc}</p>
                                         </div>

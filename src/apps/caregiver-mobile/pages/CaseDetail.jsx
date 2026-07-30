@@ -1,15 +1,19 @@
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
+import { getClient } from '../../../api/clients';
 import './CaseDetail.css';
 
 const DEFAULT_CLIENT = { name: '박영희', age: 77 };
 
-const BASIC_INFO = [
+const FALLBACK_BASIC_INFO = [
     { label: '주소', value: '청주시 흥덕구 사직동 45' },
     { label: '주요 질환', value: '고혈압, 당뇨' },
     { label: '연락처', value: '010-XXXX-XXXX' },
-    { label: '가족 연락처', value: '박○○ (자녀)' },
+    { label: '보호자명', value: '박○○' },
+    { label: '보호자 연락처', value: '010-XXXX-XXXX' },
+    { label: '보호자 관계', value: '자녀' },
 ];
 
 const SYMPTOMS = [
@@ -31,6 +35,23 @@ function CaseDetail() {
     const navigate = useNavigate();
     const location = useLocation();
     const client = location.state?.client ?? DEFAULT_CLIENT;
+    const [fullClient, setFullClient] = useState(null);
+
+    useEffect(() => {
+        if (!client.id) return;
+        getClient(client.id).then(setFullClient).catch(() => {});
+    }, [client.id]);
+
+    const basicInfo = fullClient
+        ? [
+            { label: '주소', value: fullClient.address ?? '-' },
+            { label: '주요 질환', value: '고혈압, 당뇨' },
+            { label: '연락처', value: fullClient.phone ?? '-' },
+            { label: '보호자명', value: fullClient.guardian_name ?? '-' },
+            { label: '보호자 연락처', value: fullClient.guardian_phone ?? '-' },
+            { label: '보호자 관계', value: fullClient.guardian_relation ?? '-' },
+        ]
+        : FALLBACK_BASIC_INFO;
 
     return (
         <div className="cg-case">
@@ -42,7 +63,7 @@ function CaseDetail() {
                 <div className="cg-case-card">
                     <p className="cg-case-card-title">기본 정보</p>
                     <div className="cg-case-basic">
-                        {BASIC_INFO.map((info) => (
+                        {basicInfo.map((info) => (
                             <div key={info.label} className="cg-case-basic-row">
                                 <span className="cg-case-basic-label">{info.label}</span>
                                 <span className="cg-case-basic-value">{info.value}</span>

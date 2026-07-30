@@ -167,6 +167,13 @@
     opacity: 0.9;
 }
 
+.au-error {
+    font-family: var(--font-family-regular);
+    font-size: var(--font-size-xs);
+    color: var(--alert);
+    margin-top: 8px;
+}
+
 .au-preview {
     background: var(--bgPage);
     border-radius: var(--radius-button);

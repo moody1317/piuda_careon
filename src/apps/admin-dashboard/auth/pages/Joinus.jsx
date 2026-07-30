@@ -1,12 +1,8 @@
 import { Fragment, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getInstitutionByCode } from '../../../../api/institutions';
+import { ROLE_LABELS } from '../../../../api/users';
 import './Joinus.css';
-
-const MOCK_INSTITUTIONS = {
-  'CJ-2024-0011': '청주 복지관',
-  'SJ-2024-0022': '세종 복지원',
-  'GJ-2024-0033': '광주 노인복지관',
-};
 
 const STEPS = [
   { num: 1, label: '기관 확인' },
@@ -15,11 +11,7 @@ const STEPS = [
   { num: 4, label: '완료' },
 ];
 
-const ROLES = [
-  { key: 'admin', label: '기관 관리자' },
-  { key: 'social', label: '사회복지사' },
-  { key: 'care', label: '생활지원사' },
-];
+const ROLES = Object.entries(ROLE_LABELS).map(([key, label]) => ({ key, label }));
 
 function StepIndicator({ step, completed }) {
   return (
@@ -65,6 +57,7 @@ function JoinUs() {
   const [instVerified, setInstVerified] = useState(false);
   const [instName, setInstName] = useState('');
   const [codeError, setCodeError] = useState('');
+  const [verifying, setVerifying] = useState(false);
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -101,17 +94,22 @@ function JoinUs() {
     setStep(from + 1);
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const code = instCode.trim().toUpperCase();
-    const found = MOCK_INSTITUTIONS[code];
-    if (found) {
+    if (!code || verifying) return;
+
+    setVerifying(true);
+    try {
+      const institution = await getInstitutionByCode(code);
       setInstVerified(true);
-      setInstName(found);
+      setInstName(institution.name);
       setCodeError('');
-    } else {
+    } catch {
       setInstVerified(false);
       setInstName('');
       setCodeError('등록되지 않은 기관 코드입니다.');
+    } finally {
+      setVerifying(false);
     }
   };
 
@@ -193,7 +191,9 @@ function JoinUs() {
                       }}
                       onKeyDown={e => e.key === 'Enter' && handleVerify()}
                     />
-                    <button className="jn-verify-btn" onClick={handleVerify}>확인</button>
+                    <button className="jn-verify-btn" onClick={handleVerify} disabled={verifying}>
+                      {verifying ? '확인 중...' : '확인'}
+                    </button>
                   </div>
                   {codeError && <p className="jn-error">{codeError}</p>}
                 </div>

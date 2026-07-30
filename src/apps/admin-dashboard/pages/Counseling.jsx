@@ -1,96 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Counseling.css';
 import CounselingModal from './CounselingModal';
+import { getConsultations } from '../../../api/consultations';
+import { getConsultationTags } from '../../../api/consultationTags';
+import { getUsers } from '../../../api/users';
+import { STATUS_LABELS } from '../../../api/status';
 
-const RECORDS = [
-    {
-        avatar: '박영', name: '박영희', age: 77,
-        datetime: '2026.05.26 10:45', manager: '김민지',
-        tags: ['식사 거부', '우울감'],
-        summary: '식사 못 드신다 하셨으며 기분이 많이 처지고...',
-        status: '특이사항',
-    },
-    {
-        avatar: '이순', name: '이순자', age: 83,
-        datetime: '2026.05.26 09:12', manager: '김민지',
-        tags: ['반복 발화'],
-        summary: '오늘도 예전 이야기 반복하셨으며 이름을...',
-        status: '특이사항',
-    },
-    {
-        avatar: '정대', name: '정대호', age: 79,
-        datetime: '2026.05.25 14:00', manager: '이성희',
-        tags: ['낙상 위험', '수면'],
-        summary: '어제 화장실 가다 넘어질 뻔 했다고 하심...',
-        status: '특이사항',
-    },
-    {
-        avatar: '최옥', name: '최옥순', age: 75,
-        datetime: '2026.05.25 11:30', manager: '이성희',
-        tags: ['약 복용'],
-        summary: '약을 어제 저녁에 깜빡하셨다고 하심...',
-        status: '검토 필요',
-    },
-    {
-        avatar: '강순', name: '강순희', age: 81,
-        datetime: '2026.05.24 14:10', manager: '박지수',
-        tags: ['우울감'],
-        summary: '요즘 들어 기분이 처진다고 하셨으며...',
-        status: '검토 필요',
-    },
-    {
-        avatar: '김성', name: '김성호', age: 81,
-        datetime: '2026.05.24 11:00', manager: '김민지',
-        tags: ['정상'],
-        summary: '건강 상태 양호. 혈압 정상 범위 확인...',
-        status: '정상',
-    },
-    {
-        avatar: '최화', name: '최화자', age: 79,
-        datetime: '2026.05.23 10:30', manager: '김민지',
-        tags: ['정상'],
-        summary: '전반적으로 양호. 이웃과 잘 지낸다고 하심...',
-        status: '정상',
-    },
-    {
-        avatar: '윤기', name: '윤기철', age: 85,
-        datetime: '2026.05.23 09:00', manager: '박지수',
-        tags: ['식욕 감소'],
-        summary: '식욕이 없다고 하셨으며 점심을 조금...',
-        status: '검토 필요',
-    },
-    {
-        avatar: '오달', name: '오달수', age: 77,
-        datetime: '2026.05.22 15:20', manager: '오은지',
-        tags: ['정상'],
-        summary: '활력징후 모두 정상. 기분 좋다고 하심...',
-        status: '정상',
-    },
-    {
-        avatar: '한복', name: '한복순', age: 80,
-        datetime: '2026.05.22 13:00', manager: '한미래',
-        tags: ['수면 문제'],
-        summary: '밤에 잠을 잘 못 잔다고 하셨으며...',
-        status: '검토 필요',
-    },
+function formatDatetime(isoString) {
+    return isoString.slice(0, 16).replace('T', ' ').replace(/-/g, '.');
+}
+
+const FILTERS = [
+    { key: 'all', label: '전체' },
+    ...Object.entries(STATUS_LABELS).map(([key, label]) => ({ key, label })),
 ];
 
-const FILTERS = ['전체', '특이사항', '검토 필요', '정상'];
-
 function statusMod(status) {
-    if (status === '특이사항') return 'alert';
-    if (status === '검토 필요') return 'warn';
+    if (status === 'SPECIAL_NOTE') return 'alert';
+    if (status === 'NEED_REVIEW') return 'warn';
     return 'primary';
 }
 
 function Counseling() {
     const [query, setQuery] = useState('');
-    const [statusFilter, setStatusFilter] = useState('전체');
+    const [statusFilter, setStatusFilter] = useState('all');
     const [modalRecord, setModalRecord] = useState(null);
+    const [records, setRecords] = useState([]);
 
-    let filtered = statusFilter === '전체'
-        ? RECORDS
-        : RECORDS.filter(r => r.status === statusFilter);
+    useEffect(() => {
+        Promise.all([getConsultations(), getUsers(), getConsultationTags()])
+            .then(([list, userList, tagList]) => {
+                const userById = Object.fromEntries(userList.map((u) => [u.id, u]));
+                setRecords(list.map((c) => ({
+                    id: c.id,
+                    avatar: c.recipient_name.slice(0, 2),
+                    name: c.recipient_name,
+                    age: c.recipient_age,
+                    datetime: formatDatetime(c.consulted_at),
+                    manager: userById[c.caregiver_id]?.name ?? '',
+                    tags: tagList.filter((t) => t.consultation_id === c.id).map((t) => t.tag),
+                    summary: c.ai_summary_preview,
+                    status: c.status,
+                })));
+            })
+            .catch(() => {});
+    }, []);
+
+    let filtered = statusFilter === 'all'
+        ? records
+        : records.filter(r => r.status === statusFilter);
 
     if (query.trim()) {
         const q = query.trim().toLowerCase();
@@ -108,11 +66,11 @@ function Counseling() {
                 <div className="cl-filter-btns">
                     {FILTERS.map(f => (
                         <button
-                            key={f}
-                            className={`cl-filter-btn${f === statusFilter ? ' cl-filter-btn--active' : ''}`}
-                            onClick={() => setStatusFilter(f)}
+                            key={f.key}
+                            className={`cl-filter-btn${f.key === statusFilter ? ' cl-filter-btn--active' : ''}`}
+                            onClick={() => setStatusFilter(f.key)}
                         >
-                            {f}
+                            {f.label}
                         </button>
                     ))}
                 </div>
@@ -148,10 +106,10 @@ function Counseling() {
                                     검색 결과가 없습니다.
                                 </td>
                             </tr>
-                        ) : filtered.map((r, i) => {
+                        ) : filtered.map((r) => {
                             const mod = statusMod(r.status);
                             return (
-                                <tr key={i}>
+                                <tr key={r.id}>
                                     <td>
                                         <div className="cl-person">
                                             <span className="cl-avatar">{r.avatar}</span>
@@ -165,16 +123,18 @@ function Counseling() {
                                     <td className="cl-manager">{r.manager}</td>
                                     <td>
                                         <div className="cl-tags">
-                                            {r.tags.map((tag, j) => (
-                                                <span key={j} className={`cl-tag cl-tag--${tag === '정상' ? 'ok' : 'abnormal'}`}>
-                                                    {tag}
-                                                </span>
-                                            ))}
+                                            {r.tags.length === 0
+                                                ? <span className="cl-tag cl-tag--ok">위험 요인 없음</span>
+                                                : r.tags.map((tag, j) => (
+                                                    <span key={j} className="cl-tag cl-tag--abnormal">
+                                                        {tag}
+                                                    </span>
+                                                ))}
                                         </div>
                                     </td>
                                     <td className="cl-summary">{r.summary}</td>
                                     <td>
-                                        <span className={`cl-status cl-status--${mod}`}>{r.status}</span>
+                                        <span className={`cl-status cl-status--${mod}`}>{STATUS_LABELS[r.status]}</span>
                                     </td>
                                     <td>
                                         <button className={`cl-btn-view cl-btn-view--${mod}`} onClick={() => setModalRecord(r)}>보기</button>

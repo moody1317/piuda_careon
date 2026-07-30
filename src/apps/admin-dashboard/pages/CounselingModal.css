@@ -232,6 +232,17 @@
     min-height: 72px;
 }
 
+.cm-opinion-input {
+    width: 100%;
+    resize: vertical;
+    outline: none;
+}
+
+.cm-opinion-input:focus {
+    border-color: var(--focus-border);
+    box-shadow: var(--shadow-focus);
+}
+
 .cm-changes {
     display: flex;
     flex-direction: column;

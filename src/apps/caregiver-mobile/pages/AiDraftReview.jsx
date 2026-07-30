@@ -1,32 +1,53 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
 import Toast from '../ui/Toast';
+import { getConsultation, updateConsultation } from '../../../api/consultations';
+import { getConsultationTags } from '../../../api/consultationTags';
 import './AiDraftReview.css';
-
-const TAGS = [
-    { id: 1, label: '식사 거부', tone: 'warn' },
-    { id: 2, label: '우울감 표현', tone: 'warn' },
-    { id: 3, label: '활력징후 정상', tone: 'normal' },
-];
 
 const DEFAULT_SUMMARY =
     '대상자 박영희 어르신 방문 상담 진행. 최근 식욕이 줄어 식사를 잘 못 하고 있다고 하셨으며, 기분이 처지고 외롭다는 표현을 하셨음. 혈압 측정 결과 120/80으로 정상 범위. 약 복용은 정상.';
 
 function AiDraftReview() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const consultationId = location.state?.log?.id;
     const [isEditing, setIsEditing] = useState(false);
     const [summary, setSummary] = useState(DEFAULT_SUMMARY);
+    const [tags, setTags] = useState([]);
     const [showToast, setShowToast] = useState(false);
+    const [saving, setSaving] = useState(false);
 
-    const handleSave = () => {
-        setShowToast(true);
-        setTimeout(() => {
-            setShowToast(false);
-            navigate('/schedule');
-        }, 5000);
+    useEffect(() => {
+        if (!consultationId) return;
+        getConsultation(consultationId)
+            .then((c) => setSummary(c.worker_final_note ?? c.ai_summary ?? DEFAULT_SUMMARY))
+            .catch(() => {});
+        getConsultationTags({ consultationId })
+            .then((list) => setTags(list.map((t) => t.tag)))
+            .catch(() => {});
+    }, [consultationId]);
+
+    const handleSave = async () => {
+        if (saving) return;
+        setSaving(true);
+        try {
+            if (consultationId) {
+                await updateConsultation(consultationId, { worker_final_note: summary });
+            }
+            setShowToast(true);
+            setTimeout(() => {
+                setShowToast(false);
+                navigate('/schedule');
+            }, 5000);
+        } catch {
+            // 저장 실패 시 화면에 그대로 머무름
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
@@ -48,9 +69,11 @@ function AiDraftReview() {
                 <div className="cg-draft-card">
                     <p className="cg-draft-card-title">AI 자동 태그</p>
                     <div className="cg-draft-tags">
-                        {TAGS.map((tag) => (
-                            <span key={tag.id} className={`cg-draft-tag ${tag.tone}`}>{tag.label}</span>
-                        ))}
+                        {tags.length === 0
+                            ? <span className="cg-draft-tag normal">위험 요인 없음</span>
+                            : tags.map((tag) => (
+                                <span key={tag} className="cg-draft-tag warn">{tag}</span>
+                            ))}
                     </div>
                 </div>
 
@@ -79,8 +102,8 @@ function AiDraftReview() {
                     </p>
                 </div>
 
-                <button className="cg-draft-save-button" type="button" onClick={handleSave}>
-                    최종 검토 완료 · 저장
+                <button className="cg-draft-save-button" type="button" onClick={handleSave} disabled={saving}>
+                    {saving ? '저장 중...' : '최종 검토 완료 · 저장'}
                 </button>
                 <button
                     className="cg-draft-modify-button"

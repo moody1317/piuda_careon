@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import './ChangePasswordModal.css';
 import useLockBodyScroll from '../hooks/useLockBodyScroll';
+import { changePassword } from '../../../api/users';
 
-function ChangePasswordModal({ onClose }) {
+function ChangePasswordModal({ userId, onClose }) {
     useLockBodyScroll();
 
     const [currentPw, setCurrentPw] = useState('');
     const [newPw, setNewPw] = useState('');
     const [confirmPw, setConfirmPw] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState('');
 
     const conditions = [
         { label: '8자 이상',            met: newPw.length >= 8 },
@@ -20,7 +23,22 @@ function ChangePasswordModal({ onClose }) {
     const canSubmit = currentPw.trim() !== ''
         && conditions.every(c => c.met)
         && newPw === confirmPw
-        && confirmPw.trim() !== '';
+        && confirmPw.trim() !== ''
+        && !submitting;
+
+    const handleSubmit = async () => {
+        if (!canSubmit) return;
+        setSubmitting(true);
+        setError('');
+        try {
+            await changePassword(userId, { currentPassword: currentPw, newPassword: newPw });
+            onClose();
+        } catch {
+            setError('비밀번호 변경에 실패했습니다. 다시 시도해주세요.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     return (
         <div className="cp-overlay" onClick={onClose}>
@@ -82,12 +100,14 @@ function ChangePasswordModal({ onClose }) {
                         </div>
                     </div>
 
+                    {error && <p className="cp-error">{error}</p>}
+
                     <button
                         className="cp-submit-btn"
                         disabled={!canSubmit}
-                        onClick={onClose}
+                        onClick={handleSubmit}
                     >
-                        비밀번호 변경
+                        {submitting ? '변경 중...' : '비밀번호 변경'}
                     </button>
 
                     <div className="cp-notice">

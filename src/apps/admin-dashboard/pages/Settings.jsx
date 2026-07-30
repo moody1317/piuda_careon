@@ -3,6 +3,9 @@ import './Settings.css';
 import Toggle from '../components/Toggle';
 import AddUserModal from './AddUserModal';
 import ChangePasswordModal from '../ui/ChangePasswordModal';
+import { getInstitutions, updateInstitution } from '../../../api/institutions';
+import { getUsers, ROLE_LABELS } from '../../../api/users';
+import { getSettings, updateSettings, STT_PROVIDER_LABELS, LLM_PROVIDER_LABELS } from '../../../api/settings';
 
 function usePersistedState(key, initialValue) {
     const [value, setValue] = useState(() => {
@@ -21,12 +24,10 @@ function usePersistedState(key, initialValue) {
     return [value, setValue];
 }
 
-const ACCOUNTS = [
-    { avatar: '김관', name: '김관리자', role: '기관 관리자', email: 'kim@cj.welfare.kr',  lastLogin: '2026.05.26' },
-    { avatar: '이담', name: '이담당',   role: '사회복지사',  email: 'lee@cj.welfare.kr',  lastLogin: '2026.05.26' },
-    { avatar: '박복', name: '박복지',   role: '사회복지사',  email: 'park@cj.welfare.kr', lastLogin: '2026.05.26' },
-    { avatar: '김민', name: '김민지',   role: '생활지원사',  email: 'mj@cj.welfare.kr',   lastLogin: '2026.05.26' },
-];
+function formatLastLogin(isoString) {
+    if (!isoString) return '로그인 이력 없음';
+    return isoString.slice(0, 10).replace(/-/g, '.');
+}
 
 const ALERT_ROWS = [
     { key: 'mealRefusal', title: '식사 거부 알림 임계값', sub: '연속 발생 횟수 기준', value: '2주 연속' },
@@ -48,29 +49,76 @@ const PRIVACY_ROWS = [
     { key: 'accessLog',    title: '접근 로그 자동 기록',   sub: '모든 데이터 접근 이력 저장' },
 ];
 
+// STT/LLM 연동 항목은 기관 설정(stt_provider/llm_provider) 기준으로 별도 표시
 const INTEGRATIONS = [
-    { name: 'STT API (음성 인식)', desc: 'Google Speech-to-Text v2' },
-    { name: 'LLM 요약 API',       desc: 'Anthropic Claude API' },
-    { name: '기관 행정 시스템',    desc: '노인맞춤돌봄서비스 플랫폼' },
-    { name: '백업 스토리지',       desc: 'AWS S3 (암호화 버킷)' },
+    { name: '기관 행정 시스템', desc: '노인맞춤돌봄서비스 플랫폼' },
+    { name: '백업 스토리지',    desc: 'AWS S3 (암호화 버킷)' },
 ];
 
-const ORG_INITIAL = {
-    name: '청주 복지관',
-    code: 'CJ-2024-0011',
-    address: '충청북도 청주시 흥덕구 복지로 123',
-    phone: '043-000-0000',
-};
+const ORG_EMPTY = { id: null, name: '', code: '', address: '', phone: '' };
 
 function Settings() {
-    const [org, setOrg] = useState(ORG_INITIAL);
+    const [org, setOrg] = useState(ORG_EMPTY);
+    const [savedOrg, setSavedOrg] = useState(ORG_EMPTY);
+    const [orgSaving, setOrgSaving] = useState(false);
+    const [accounts, setAccounts] = useState([]);
     const [showAddUser, setShowAddUser] = useState(false);
-    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [passwordTargetId, setPasswordTargetId] = useState(null);
 
     const [alertOn, setAlertOn] = usePersistedState('settings.alertOn', { mealRefusal: true, depression: true, repeat: true });
     const [aiOn, setAiOn] = usePersistedState('settings.aiOn', { autoAnalysis: true, autoTag: true, riskScore: true, patternAlert: false });
     const [sensitivity, setSensitivity] = usePersistedState('settings.sensitivity', 60);
-    const [privacyOn, setPrivacyOn] = usePersistedState('settings.privacyOn', { voiceDelete: true, maskKeyword: true, encryptText: true, accessLog: true });
+    const [privacyOn, setPrivacyOn] = usePersistedState('settings.privacyOn', { maskKeyword: true, encryptText: true, accessLog: true });
+
+    const [settings, setSettings] = useState(null);
+    const [settingsSaving, setSettingsSaving] = useState(false);
+
+    useEffect(() => {
+        getInstitutions()
+            .then(([institution]) => {
+                if (!institution) return;
+                setOrg(institution);
+                setSavedOrg(institution);
+            })
+            .catch(() => {});
+    }, []);
+
+    useEffect(() => {
+        if (!org.id) return;
+        getUsers({ institutionId: org.id })
+            .then(setAccounts)
+            .catch(() => {});
+        getSettings(org.id)
+            .then(setSettings)
+            .catch(() => {});
+    }, [org.id]);
+
+    const handleOrgSave = async () => {
+        if (!org.id || orgSaving) return;
+        setOrgSaving(true);
+        try {
+            const updated = await updateInstitution(org.id, org);
+            setOrg(updated);
+            setSavedOrg(updated);
+        } catch {
+            // 저장 실패 시 기존 값 유지
+        } finally {
+            setOrgSaving(false);
+        }
+    };
+
+    const handleSettingsSave = async () => {
+        if (!settings || settingsSaving) return;
+        setSettingsSaving(true);
+        try {
+            const updated = await updateSettings(settings.id, settings);
+            setSettings(updated);
+        } catch {
+            // 저장 실패 시 기존 값 유지
+        } finally {
+            setSettingsSaving(false);
+        }
+    };
 
     return (
         <>
@@ -106,8 +154,10 @@ function Settings() {
                     </div>
                 </div>
                 <div className="se-form-actions">
-                    <button className="se-btn se-btn--outline" onClick={() => setOrg(ORG_INITIAL)}>취소</button>
-                    <button className="se-btn se-btn--primary">변경사항 저장</button>
+                    <button className="se-btn se-btn--outline" onClick={() => setOrg(savedOrg)}>취소</button>
+                    <button className="se-btn se-btn--primary" onClick={handleOrgSave} disabled={orgSaving}>
+                        {orgSaving ? '저장 중...' : '변경사항 저장'}
+                    </button>
                 </div>
             </div>
 
@@ -133,19 +183,19 @@ function Settings() {
                         </tr>
                     </thead>
                     <tbody>
-                        {ACCOUNTS.map((a, i) => (
-                            <tr key={i}>
+                        {accounts.map((a) => (
+                            <tr key={a.id}>
                                 <td>
                                     <div className="se-person">
-                                        <span className="se-avatar">{a.avatar}</span>
+                                        <span className="se-avatar">{a.name.slice(0, 2)}</span>
                                         <span className="se-name">{a.name}</span>
                                     </div>
                                 </td>
-                                <td><span className="se-role-badge">{a.role}</span></td>
+                                <td><span className="se-role-badge">{ROLE_LABELS[a.role] ?? a.role}</span></td>
                                 <td className="se-email">{a.email}</td>
-                                <td><span className="se-status-badge">활성</span></td>
-                                <td className="se-last-login">{a.lastLogin}</td>
-                                <td><button className="se-btn se-btn--outline se-btn--sm" onClick={() => setShowPasswordModal(true)}>비밀번호 변경</button></td>
+                                <td><span className="se-status-badge">{a.isActive ? '활성' : '비활성'}</span></td>
+                                <td className="se-last-login">{formatLastLogin(a.lastLoginAt)}</td>
+                                <td><button className="se-btn se-btn--outline se-btn--sm" onClick={() => setPasswordTargetId(a.id)}>비밀번호 변경</button></td>
                             </tr>
                         ))}
                     </tbody>
@@ -160,6 +210,16 @@ function Settings() {
                     </div>
                 </div>
                 <div className="se-toggle-list">
+                    <div className="se-toggle-row">
+                        <div className="se-toggle-info">
+                            <span className="se-toggle-title">알림 사용</span>
+                            <span className="se-toggle-sub">기관 전체 알림 발송 여부</span>
+                        </div>
+                        <Toggle
+                            checked={settings?.notification_enabled ?? false}
+                            onChange={v => setSettings({ ...settings, notification_enabled: v })}
+                        />
+                    </div>
                     {ALERT_ROWS.map(row => (
                         <div key={row.key} className="se-toggle-row">
                             <div className="se-toggle-info">
@@ -180,7 +240,9 @@ function Settings() {
                     ))}
                 </div>
                 <div className="se-form-actions">
-                    <button className="se-btn se-btn--primary">알림 설정 저장</button>
+                    <button className="se-btn se-btn--primary" onClick={handleSettingsSave} disabled={settingsSaving}>
+                        {settingsSaving ? '저장 중...' : '알림 설정 저장'}
+                    </button>
                 </div>
             </div>
 
@@ -239,10 +301,17 @@ function Settings() {
                                     <span className="se-toggle-title">{row.title}</span>
                                     <span className="se-toggle-sub">{row.sub}</span>
                                 </div>
-                                <Toggle
-                                    checked={privacyOn[row.key]}
-                                    onChange={v => setPrivacyOn({ ...privacyOn, [row.key]: v })}
-                                />
+                                {row.key === 'voiceDelete' ? (
+                                    <Toggle
+                                        checked={settings?.audio_retention_policy === 'DELETE_AFTER_STT'}
+                                        onChange={v => setSettings({ ...settings, audio_retention_policy: v ? 'DELETE_AFTER_STT' : 'RETAIN' })}
+                                    />
+                                ) : (
+                                    <Toggle
+                                        checked={privacyOn[row.key]}
+                                        onChange={v => setPrivacyOn({ ...privacyOn, [row.key]: v })}
+                                    />
+                                )}
                             </div>
                         ))}
                     </div>
@@ -252,6 +321,11 @@ function Settings() {
                             <span>3년 (법적 최소 기준)</span>
                             <i className="bi bi-chevron-down" />
                         </div>
+                    </div>
+                    <div className="se-form-actions">
+                        <button className="se-btn se-btn--primary" onClick={handleSettingsSave} disabled={settingsSaving}>
+                            {settingsSaving ? '저장 중...' : '개인정보 설정 저장'}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -264,6 +338,28 @@ function Settings() {
                     </div>
                 </div>
                 <div className="se-integ-list">
+                    {settings && (
+                        <>
+                            <div className="se-integ-row">
+                                <div className="se-integ-name">
+                                    <span className="se-integ-dot" />
+                                    STT API (음성 인식)
+                                </div>
+                                <div className="se-integ-desc">{STT_PROVIDER_LABELS[settings.stt_provider] ?? settings.stt_provider}</div>
+                                <span className="se-status-badge">연동됨</span>
+                                <button className="se-btn se-btn--outline se-btn--sm">설정 변경</button>
+                            </div>
+                            <div className="se-integ-row">
+                                <div className="se-integ-name">
+                                    <span className="se-integ-dot" />
+                                    LLM 요약 API
+                                </div>
+                                <div className="se-integ-desc">{LLM_PROVIDER_LABELS[settings.llm_provider] ?? settings.llm_provider}</div>
+                                <span className="se-status-badge">연동됨</span>
+                                <button className="se-btn se-btn--outline se-btn--sm">설정 변경</button>
+                            </div>
+                        </>
+                    )}
                     {INTEGRATIONS.map((it, i) => (
                         <div key={i} className="se-integ-row">
                             <div className="se-integ-name">
@@ -280,11 +376,18 @@ function Settings() {
         </div>
 
         {showAddUser && (
-            <AddUserModal onClose={() => setShowAddUser(false)} />
+            <AddUserModal
+                institutionId={org.id}
+                onCreated={(user) => setAccounts(prev => [...prev, user])}
+                onClose={() => setShowAddUser(false)}
+            />
         )}
 
-        {showPasswordModal && (
-            <ChangePasswordModal onClose={() => setShowPasswordModal(false)} />
+        {passwordTargetId && (
+            <ChangePasswordModal
+                userId={passwordTargetId}
+                onClose={() => setPasswordTargetId(null)}
+            />
         )}
         </>
     );

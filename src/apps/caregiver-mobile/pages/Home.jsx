@@ -5,10 +5,10 @@ import BottomMenu from '../ui/BottomMenu';
 import './Home.css';
 
 const VISITS = [
-    { id: 1, initials: '이순', name: '이순자', age: 83, time: '09:00', address: '서운동 123', status: 'done' },
-    { id: 2, initials: '박영', name: '박영희', age: 77, time: '10:30', address: '사직동 45', status: 'alert' },
-    { id: 3, initials: '김성', name: '김성호', age: 81, time: '13:00', address: '복대동 67', status: 'scheduled' },
-    { id: 4, initials: '최옥', name: '최옥순', age: 75, time: '14:30', address: '가경동 89', status: 'scheduled' },
+    { id: 1, clientId: '2', initials: '이순', name: '이순자', age: 83, time: '09:00', address: '서운동 123', status: 'done' },
+    { id: 2, clientId: '1', initials: '박영', name: '박영희', age: 77, time: '10:30', address: '사직동 45', status: 'alert' },
+    { id: 3, clientId: '7', initials: '김성', name: '김성호', age: 81, time: '13:00', address: '복대동 67', status: 'scheduled' },
+    { id: 4, clientId: '4', initials: '최옥', name: '최옥순', age: 75, time: '14:30', address: '가경동 89', status: 'scheduled' },
 ];
 
 const STATUS_LABEL = {

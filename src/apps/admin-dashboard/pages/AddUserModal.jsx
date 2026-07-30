@@ -1,19 +1,44 @@
 import { useState } from 'react';
 import './AddUserModal.css';
 import useLockBodyScroll from '../hooks/useLockBodyScroll';
+import { createUser } from '../../../api/users';
 
-const ROLE_BTNS = ['기관 관리자', '사회복지사', '생활지원사'];
+const INITIAL_PASSWORD = '1234';
 
-function AddUserModal({ onClose }) {
+function AddUserModal({ institutionId, onCreated, onClose }) {
     useLockBodyScroll();
 
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
-    const [role, setRole] = useState('생활지원사');
+    const [role] = useState('CARE_WORKER');
     const [sendEmail, setSendEmail] = useState(true);
+    const [creating, setCreating] = useState(false);
+    const [error, setError] = useState('');
 
     const previewEmail = email.trim() || 'example@cj.welfare.kr';
+
+    const handleCreate = async () => {
+        if (!name.trim() || !email.trim() || creating) return;
+        setCreating(true);
+        setError('');
+        try {
+            const user = await createUser({
+                institutionId,
+                name,
+                phone,
+                email,
+                role,
+                password: INITIAL_PASSWORD,
+            });
+            onCreated?.(user);
+            onClose();
+        } catch {
+            setError('계정 생성에 실패했습니다. 다시 시도해주세요.');
+        } finally {
+            setCreating(false);
+        }
+    };
 
     return (
         <div className="au-overlay" onClick={onClose}>
@@ -75,11 +100,15 @@ function AddUserModal({ onClose }) {
                         />
                         계정 정보(아이디·초기 비밀번호)를 이메일로 발송합니다.
                     </label>
+
+                    {error && <p className="au-error">{error}</p>}
                 </div>
 
                 <div className="au-footer">
                     <button className="au-btn au-btn--outline" onClick={onClose}>취소</button>
-                    <button className="au-btn au-btn--primary">계정 생성</button>
+                    <button className="au-btn au-btn--primary" onClick={handleCreate} disabled={creating}>
+                        {creating ? '생성 중...' : '계정 생성'}
+                    </button>
                 </div>
             </div>
         </div>

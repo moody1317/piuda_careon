@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
 import Toast from '../ui/Toast';
+import { getCurrentUser, changePassword, ROLE_LABELS } from '../../../api/users';
+import { getInstitution } from '../../../api/institutions';
 import './Mypage.css';
 import './ChangePassword.css';
 
@@ -11,13 +13,6 @@ const STATS = [
     { id: 1, value: '32명', label: '담당 인원' },
     { id: 2, value: '3명', label: '생활지원사' },
     { id: 3, value: '5년차', label: '근무 연차' },
-];
-
-const ACCOUNT_INFO = [
-    { label: '이메일', value: 'lee@cj.welfare.kr' },
-    { label: '연락처', value: '010-XXXX-XXXX' },
-    { label: '소속 기관', value: '청주 복지관' },
-    { label: '사번', value: 'SW-2021-014' },
 ];
 
 const REQUIREMENTS = [
@@ -34,6 +29,27 @@ function ChangePassword() {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [showToast, setShowToast] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState('');
+    const [user, setUser] = useState(null);
+    const [institution, setInstitution] = useState(null);
+
+    useEffect(() => {
+        getCurrentUser()
+            .then((u) => {
+                setUser(u);
+                return getInstitution(u.institutionId);
+            })
+            .then(setInstitution)
+            .catch(() => {});
+    }, []);
+
+    const accountInfo = [
+        { label: '이메일', value: user?.email ?? '-' },
+        { label: '연락처', value: user?.phone ?? '-' },
+        { label: '소속 기관', value: institution?.name ?? '-' },
+        { label: '사번', value: 'SW-2021-014' },
+    ];
 
     const checks = useMemo(
         () => REQUIREMENTS.map((req) => ({ ...req, met: req.test(newPassword) })),
@@ -44,15 +60,25 @@ function ChangePassword() {
         currentPassword.length > 0 &&
         newPassword.length > 0 &&
         newPassword === confirmPassword &&
-        checks.every((c) => c.met);
+        checks.every((c) => c.met) &&
+        !submitting;
 
-    const handleSubmit = () => {
-        if (!canSubmit) return;
-        setShowToast(true);
-        setTimeout(() => {
-            setShowToast(false);
-            navigate(-1);
-        }, 2000);
+    const handleSubmit = async () => {
+        if (!canSubmit || !user) return;
+        setSubmitting(true);
+        setError('');
+        try {
+            await changePassword(user.id, { currentPassword, newPassword });
+            setShowToast(true);
+            setTimeout(() => {
+                setShowToast(false);
+                navigate(-1);
+            }, 2000);
+        } catch {
+            setError('비밀번호 변경에 실패했습니다. 다시 시도해주세요.');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -63,9 +89,9 @@ function ChangePassword() {
 
             <div className="cg-my-body">
                 <div className="cg-my-profile">
-                    <span className="cg-my-avatar">이담</span>
-                    <p className="cg-my-name">이담당 사회복지사</p>
-                    <p className="cg-my-role">청주 복지관 · 전담사회복지사</p>
+                    <span className="cg-my-avatar">{user?.name?.slice(0, 1) ?? ''}</span>
+                    <p className="cg-my-name">{user ? `${user.name} ${ROLE_LABELS[user.role] ?? ''}` : ''}</p>
+                    <p className="cg-my-role">{institution?.name ?? ''} · {ROLE_LABELS[user?.role] ?? ''}</p>
 
                     <div className="cg-my-stats">
                         {STATS.map((stat, index) => (
@@ -80,7 +106,7 @@ function ChangePassword() {
                 <div className="cg-my-card">
                     <p className="cg-my-card-title">계정 정보</p>
                     <div className="cg-my-account">
-                        {ACCOUNT_INFO.map((info) => (
+                        {accountInfo.map((info) => (
                             <div key={info.label} className="cg-my-account-row">
                                 <span className="cg-my-account-label">{info.label}</span>
                                 <span className="cg-my-account-value">{info.value}</span>
@@ -140,13 +166,15 @@ function ChangePassword() {
                         ))}
                     </div>
 
+                    {error && <p className="cg-pw-error">{error}</p>}
+
                     <button
                         className="cg-pw-submit-button"
                         type="button"
                         disabled={!canSubmit}
                         onClick={handleSubmit}
                     >
-                        비밀번호 변경
+                        {submitting ? '변경 중...' : '비밀번호 변경'}
                     </button>
                 </div>
             </div>

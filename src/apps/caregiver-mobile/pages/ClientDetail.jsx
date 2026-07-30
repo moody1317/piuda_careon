@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
+import { getClient } from '../../../api/clients';
 import './ClientDetail.css';
 
 const DEFAULT_CLIENT = {
@@ -14,11 +16,13 @@ const DEFAULT_CLIENT = {
     tags: ['식사 거부 (2회)', '수면 문제', '약 복용 확인'],
 };
 
-const BASIC_INFO = [
+const FALLBACK_BASIC_INFO = [
     { label: '주소', value: '청주시 흥덕구 사직동 45' },
     { label: '주요 질환', value: '고혈압, 당뇨' },
     { label: '연락처', value: '010-XXXX-XXXX' },
-    { label: '가족 연락처', value: '박○○ (자녀)' },
+    { label: '보호자명', value: '박○○' },
+    { label: '보호자 연락처', value: '010-XXXX-XXXX' },
+    { label: '보호자 관계', value: '자녀' },
 ];
 
 const HISTORY = [
@@ -32,6 +36,23 @@ function ClientDetail() {
     const client = location.state?.log ?? DEFAULT_CLIENT;
     const tags = client.tags ?? DEFAULT_CLIENT.tags;
     const fromHome = (location.state?.source ?? 'home') === 'home';
+    const [fullClient, setFullClient] = useState(null);
+
+    useEffect(() => {
+        if (!client.clientId) return;
+        getClient(client.clientId).then(setFullClient).catch(() => {});
+    }, [client.clientId]);
+
+    const basicInfo = fullClient
+        ? [
+            { label: '주소', value: fullClient.address ?? '-' },
+            { label: '주요 질환', value: '고혈압, 당뇨' },
+            { label: '연락처', value: fullClient.phone ?? '-' },
+            { label: '보호자명', value: fullClient.guardian_name ?? '-' },
+            { label: '보호자 연락처', value: fullClient.guardian_phone ?? '-' },
+            { label: '보호자 관계', value: fullClient.guardian_relation ?? '-' },
+        ]
+        : FALLBACK_BASIC_INFO;
 
     return (
         <div className="cg-cd">
@@ -55,7 +76,7 @@ function ClientDetail() {
                 <div className="cg-cd-section">
                     <p className="cg-cd-section-title">기본 정보</p>
                     <div className="cg-cd-basic">
-                        {BASIC_INFO.map((info) => (
+                        {basicInfo.map((info) => (
                             <div key={info.label} className="cg-cd-basic-row">
                                 <span className="cg-cd-basic-label">{info.label}</span>
                                 <span className="cg-cd-basic-value">{info.value}</span>

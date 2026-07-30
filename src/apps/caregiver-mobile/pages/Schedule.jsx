@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
+import { getConsultations } from '../../../api/consultations';
+import { getConsultationTags } from '../../../api/consultationTags';
+import { getUsers } from '../../../api/users';
 import './Schedule.css';
 
 const FILTERS = [
@@ -11,26 +14,43 @@ const FILTERS = [
     { key: 'pending', label: '미작성' },
 ];
 
-const LOGS = [
-    { id: 1, initials: '박영', name: '박영희', age: 77, gender: '여', datetime: '2026.05.26 10:45', manager: '김민지', tags: ['식사거부', '우울감'], status: 'done' },
-    { id: 2, initials: '이순', name: '이순자', age: 83, gender: '여', datetime: '2026.05.26 09:12', manager: '김민지', tags: ['반복발화'], status: 'done' },
-    { id: 3, initials: '정대', name: '정대호', age: 79, gender: '남', datetime: '2026.05.25 14:00', manager: '김민지', tags: ['낙상위험'], status: 'pending' },
-    { id: 4, initials: '최옥', name: '최옥순', age: 75, gender: '여', datetime: '2026.05.25 11:30', manager: '김민지', tags: ['약 복용'], status: 'pending' },
-    { id: 5, initials: '강순', name: '강순희', age: 81, gender: '여', datetime: '2026.05.24 14:10', manager: '김민지', tags: ['우울감'], status: 'pending' },
-    { id: 6, initials: '김성', name: '김성호', age: 81, gender: '남', datetime: '2026.05.24 11:00', manager: '김민지', tags: ['정상'], status: 'done' },
-    { id: 7, initials: '최화', name: '최화자', age: 79, gender: '여', datetime: '2026.05.23 10:30', manager: '김민지', tags: ['정상'], status: 'done' },
-];
-
 const STATUS_LABEL = {
     done: '작성완료',
     pending: '미작성',
 };
 
+function formatDatetime(isoString) {
+    return isoString.slice(0, 16).replace('T', ' ').replace(/-/g, '.');
+}
+
 function Schedule() {
     const navigate = useNavigate();
     const [activeFilter, setActiveFilter] = useState('all');
+    const [logs, setLogs] = useState([]);
 
-    const filteredLogs = LOGS.filter((log) => activeFilter === 'all' || log.status === activeFilter);
+    useEffect(() => {
+        // TODO: 로그인/세션 연동 후 실제 로그인한 생활지원사 id로 교체
+        getUsers()
+            .then((users) => users.find((u) => u.name === '김민지'))
+            .then((caregiver) => caregiver
+                ? Promise.all([getConsultations({ caregiverId: caregiver.id }), getConsultationTags()])
+                : [[], []])
+            .then(([list, tagList]) => {
+                setLogs(list.map((c) => ({
+                    id: c.id,
+                    initials: c.recipient_name.slice(0, 2),
+                    name: c.recipient_name,
+                    age: c.recipient_age,
+                    datetime: formatDatetime(c.consulted_at),
+                    manager: '김민지',
+                    tags: tagList.filter((t) => t.consultation_id === c.id).map((t) => t.tag),
+                    status: c.worker_final_note ? 'done' : 'pending',
+                })));
+            })
+            .catch(() => {});
+    }, []);
+
+    const filteredLogs = logs.filter((log) => activeFilter === 'all' || log.status === activeFilter);
 
     return (
         <div className="cg-schedule">
@@ -70,14 +90,13 @@ function Schedule() {
                                     </span>
                                 </div>
                                 <div className="cg-log-item-tags">
-                                    {log.tags.map((tag) => (
-                                        <span
-                                            key={tag}
-                                            className={`cg-log-tag ${tag === '정상' ? 'normal' : 'warn'}`}
-                                        >
-                                            {tag}
-                                        </span>
-                                    ))}
+                                    {log.tags.length === 0
+                                        ? <span className="cg-log-tag normal">위험 요인 없음</span>
+                                        : log.tags.map((tag) => (
+                                            <span key={tag} className="cg-log-tag warn">
+                                                {tag}
+                                            </span>
+                                        ))}
                                 </div>
                             </div>
                         </div>
