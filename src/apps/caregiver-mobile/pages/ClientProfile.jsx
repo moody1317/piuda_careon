@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
-import { getClients, STATUS_META } from '../../../api/clients';
+import { getRecipientsByCaregiver, STATUS_META } from '../../../api/clients';
+import { getConsultations } from '../../../api/consultations';
 import { getUsers } from '../../../api/users';
 import './ClientProfile.css';
 
@@ -29,17 +30,30 @@ function ClientProfile() {
     const [clients, setClients] = useState([]);
 
     useEffect(() => {
-        Promise.all([getClients(), getUsers()])
-            .then(([clientList, userList]) => {
-                const userById = Object.fromEntries(userList.map((u) => [u.id, u]));
+        // TODO: 로그인/세션 연동 후 실제 로그인한 생활지원사 이름으로 교체
+        getUsers()
+            .then((users) => users.find((u) => u.name === '김민지'))
+            .then((caregiver) => caregiver
+                ? Promise.all([getRecipientsByCaregiver(caregiver.id), getConsultations()])
+                : [[], []])
+            .then(([clientList, consultations]) => {
+                // 대상자 상태는 care-recipient가 아닌 consultation.status 기준.
+                // recipientId 연결고리가 없어 이름 + 최신 상담일시로 매칭.
+                const latestByName = {};
+                for (const c of consultations) {
+                    const prev = latestByName[c.recipientName];
+                    if (!prev || new Date(c.consultedAt) > new Date(prev.consultedAt)) {
+                        latestByName[c.recipientName] = c;
+                    }
+                }
                 setClients(clientList.map((c) => ({
                     id: c.id,
                     initials: c.name.slice(0, 2),
                     name: c.name,
                     age: c.age,
-                    manager: userById[c.assigned_caregiver_id]?.name ?? '',
+                    manager: c.caregiverName,
                     tags: TAGS_BY_NAME[c.name] ?? '정상',
-                    status: STATUS_META[c.current_status]?.key ?? 'normal',
+                    status: STATUS_META[latestByName[c.name]?.status]?.key ?? 'normal',
                 })));
             })
             .catch(() => {});

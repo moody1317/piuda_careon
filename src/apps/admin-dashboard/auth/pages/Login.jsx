@@ -1,12 +1,32 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout';
+import { login } from '../../../../api/auth';
 import './Login.css';
 
 function Login() {
     const navigate = useNavigate();
     const [alwaysLogin, setAlwaysLogin] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [institutionCode, setInstitutionCode] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+
+    const handleLogin = async () => {
+        if (submitting) return;
+        setSubmitting(true);
+        setError('');
+        try {
+            await login({ institutionCode, email, password });
+            navigate('/dashboard');
+        } catch (err) {
+            setError(err.message ?? '로그인에 실패했습니다.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     return (
         <AuthLayout>
@@ -24,11 +44,21 @@ function Login() {
                 <p className='input-comment'>기관 계정으로 로그인하세요.</p>
                 <div className="login-input-field">
                     <p>기관 코드</p>
-                    <input className='login-input' placeholder='기관 코드를 입력하세요.' />
+                    <input
+                        className='login-input'
+                        placeholder='기관 코드를 입력하세요.'
+                        value={institutionCode}
+                        onChange={(e) => setInstitutionCode(e.target.value)}
+                    />
                 </div>
                 <div className="login-input-field">
                     <p>이메일</p>
-                    <input className='login-input' placeholder='이메일 주소를 입력하세요.' />
+                    <input
+                        className='login-input'
+                        placeholder='이메일 주소를 입력하세요.'
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
                 </div>
                 <div className="login-input-field">
                     <div>비밀번호</div>
@@ -37,6 +67,8 @@ function Login() {
                             className='login-input'
                             type={showPassword ? 'text' : 'password'}
                             placeholder='비밀번호를 입력하세요.'
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                         <button
                             type="button"
@@ -47,6 +79,7 @@ function Login() {
                         </button>
                     </div>
                 </div>
+                {error && <p className="login-error">{error}</p>}
                 <div className='login-bottom'>
                     <div className="always-login" onClick={() => setAlwaysLogin(!alwaysLogin)}>
                         <i className={`bi bi-check-square${alwaysLogin ? '-fill' : ''}`} style={{color: `${alwaysLogin ? 'var(--primaryMid)' : 'var(--textSecondary)'}`, fontSize: 'var(--font-size-lg)'}}></i>
@@ -54,7 +87,9 @@ function Login() {
                     </div>
                     <p className="find-pw" onClick={() => navigate('/find-password')}>비밀번호 찾기</p>
                 </div>
-                <button className="login-button" onClick={() => navigate('/dashboard')}>로그인</button>
+                <button className="login-button" onClick={handleLogin} disabled={submitting}>
+                    {submitting ? '로그인 중...' : '로그인'}
+                </button>
                 <div className='or'>
                     <div className="or-line-left" />
                     <p className="or-text">또는</p>

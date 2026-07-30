@@ -5,7 +5,6 @@ import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
 import Toast from '../ui/Toast';
 import { getConsultation, updateConsultation } from '../../../api/consultations';
-import { getConsultationTags } from '../../../api/consultationTags';
 import './AiDraftReview.css';
 
 const DEFAULT_SUMMARY =
@@ -24,10 +23,10 @@ function AiDraftReview() {
     useEffect(() => {
         if (!consultationId) return;
         getConsultation(consultationId)
-            .then((c) => setSummary(c.worker_final_note ?? c.ai_summary ?? DEFAULT_SUMMARY))
-            .catch(() => {});
-        getConsultationTags({ consultationId })
-            .then((list) => setTags(list.map((t) => t.tag)))
+            .then((c) => {
+                setSummary(c.workerFinalNote ?? c.aiSummary ?? DEFAULT_SUMMARY);
+                setTags(c.aiTags ?? []);
+            })
             .catch(() => {});
     }, [consultationId]);
 
@@ -36,7 +35,7 @@ function AiDraftReview() {
         setSaving(true);
         try {
             if (consultationId) {
-                await updateConsultation(consultationId, { worker_final_note: summary });
+                await updateConsultation(consultationId, { workerFinalNote: summary });
             }
             setShowToast(true);
             setTimeout(() => {

@@ -2,14 +2,8 @@ import { MOCK_CONSULTATIONS } from './consultations.mock';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 
-// 백엔드 연동 전까지 더미데이터 사용. 연동 완료 후 false로 바꾸고
-// 이 파일의 USE_MOCK 분기 + consultations.mock.js를 제거하면 됩니다.
+// 백엔드 연동 전까지 더미데이터 사용. 연동 완료 후 false로 바꾸고 이 파일의 USE_MOCK 분기 + consultations.mock.js 제거
 const USE_MOCK = true;
-
-// 상담일지는 앱의 녹음 업로드 → 서버 STT/LLM 처리 후 생성되는 레코드라
-// 프론트에서 직접 생성(create)하지 않습니다. 여기서는 조회와,
-// 생활지원사/사회복지사가 검토 후 남기는 필드(worker_final_note, social_worker_opinion,
-// status) 수정만 제공합니다.
 
 async function request(path, options = {}) {
     const res = await fetch(`${API_BASE_URL}${path}`, {
@@ -25,26 +19,20 @@ async function request(path, options = {}) {
     return res.json();
 }
 
-// 상담일지 목록 조회 (institutionId, caregiverId, recipientId, status로 필터링 가능)
-export function getConsultations({ institutionId, caregiverId, recipientId, status } = {}) {
-    if (USE_MOCK) {
-        let list = MOCK_CONSULTATIONS;
-        if (institutionId) list = list.filter(c => c.institution_id === institutionId);
-        if (caregiverId) list = list.filter(c => c.caregiver_id === caregiverId);
-        if (recipientId) list = list.filter(c => c.recipient_id === recipientId);
-        if (status) list = list.filter(c => c.status === status);
-        return Promise.resolve(list);
-    }
-    const params = new URLSearchParams();
-    if (institutionId) params.set('institution_id', institutionId);
-    if (caregiverId) params.set('caregiver_id', caregiverId);
-    if (recipientId) params.set('recipient_id', recipientId);
-    if (status) params.set('status', status);
-    const query = params.toString() ? `?${params}` : '';
-    return request(`/consultations${query}`);
+function toSummary(c) {
+    const { id, recipientName, recipientAge, caregiverName, consultedAt, status, riskScore, aiTags, aiSummaryPreview } = c;
+    return { id, recipientName, recipientAge, caregiverName, consultedAt, status, riskScore, aiTags, aiSummaryPreview };
 }
 
-// 상담일지 단건 조회 (id)
+// 상담일지 목록 조회
+export function getConsultations() {
+    if (USE_MOCK) {
+        return Promise.resolve(MOCK_CONSULTATIONS.map(toSummary));
+    }
+    return request('/consultations');
+}
+
+// 상담일지 상세 조회
 export function getConsultation(id) {
     if (USE_MOCK) {
         const found = MOCK_CONSULTATIONS.find(c => c.id === id);
@@ -53,12 +41,74 @@ export function getConsultation(id) {
     return request(`/consultations/${id}`);
 }
 
-// 생활지원사 최종 검토/사회복지사 소견 등 후속 수정
+// 상담일지 수동 생성
+export function createConsultation({ recipientName, recipientAge, caregiverId, consultedAt, audioUrl }) {
+    if (USE_MOCK) {
+        const consultation = {
+            id: String(Date.now()),
+            recipientName,
+            recipientAge,
+            caregiverName: '',
+            consultedAt,
+            audioUrl: audioUrl ?? null,
+            status: 'NORMAL',
+            riskScore: null,
+            aiTags: [],
+            sttText: null,
+            aiSummary: null,
+            aiSummaryPreview: null,
+            workerFinalNote: null,
+            socialWorkerOpinion: null,
+        };
+        MOCK_CONSULTATIONS.push(consultation);
+        return Promise.resolve(toSummary(consultation));
+    }
+    return request('/consultations', {
+        method: 'POST',
+        body: JSON.stringify({ recipientName, recipientAge, caregiverId, consultedAt, audioUrl }),
+    });
+}
+
+// 녹음 파일 업로드
+export function uploadAudio(id, file) {
+    if (USE_MOCK) {
+        const consultation = MOCK_CONSULTATIONS.find(c => c.id === id);
+        if (!consultation) return Promise.reject(new Error('상담일지를 찾을 수 없습니다.'));
+        consultation.audioUrl = `mock://${file?.name ?? 'audio'}`;
+        return Promise.resolve(consultation);
+    }
+    const formData = new FormData();
+    formData.append('file', file);
+    return fetch(`${API_BASE_URL}/consultations/${id}/audio`, { method: 'POST', body: formData })
+        .then((res) => {
+            if (!res.ok) throw new Error(`녹음 업로드 실패 (${res.status})`);
+            return res.json();
+        });
+}
+
+// 방문 상담 녹음 → STT/LLM 일괄 처리
+export function processConsultation({ caregiverId, recipientId, consultedAt, file }) {
+    if (USE_MOCK) {
+        return Promise.reject(new Error('목업 모드에서는 지원하지 않는 기능입니다.'));
+    }
+    const formData = new FormData();
+    formData.append('caregiverId', caregiverId);
+    formData.append('recipientId', recipientId);
+    formData.append('consultedAt', consultedAt);
+    formData.append('file', file);
+    return fetch(`${API_BASE_URL}/consultations/process`, { method: 'POST', body: formData })
+        .then((res) => {
+            if (!res.ok) throw new Error(`상담 처리 요청 실패 (${res.status})`);
+            return res.json();
+        });
+}
+
+// 생활지원사 최종 메모 / 사회복지사 소견 저장용 함수.
 export function updateConsultation(id, patch) {
     if (USE_MOCK) {
         const consultation = MOCK_CONSULTATIONS.find(c => c.id === id);
         if (!consultation) return Promise.reject(new Error('상담일지를 찾을 수 없습니다.'));
-        Object.assign(consultation, patch, { updated_at: new Date().toISOString() });
+        Object.assign(consultation, patch);
         return Promise.resolve(consultation);
     }
     return request(`/consultations/${id}`, {

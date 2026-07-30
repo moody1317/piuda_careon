@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import './CounselingModal.css';
 import useLockBodyScroll from '../hooks/useLockBodyScroll';
 import { getConsultation, updateConsultation } from '../../../api/consultations';
-import { getConsultationTags } from '../../../api/consultationTags';
 
 // 이전 상담 대비 변화는 아직 백엔드 필드가 없어 화면 시연용으로 고정 표시
 const CHANGES = [
@@ -11,11 +10,6 @@ const CHANGES = [
     { label: '혈압',        detail: '정상 유지',             type: 'primary' },
     { label: '약 복용',     detail: '정상 이행',             type: 'primary' },
 ];
-
-function formatDatetime(isoString) {
-    if (!isoString) return '-';
-    return isoString.slice(0, 16).replace('T', ' ').replace(/-/g, '.');
-}
 
 function CounselingModal({ record, onClose }) {
     useLockBodyScroll();
@@ -28,18 +22,16 @@ function CounselingModal({ record, onClose }) {
     useEffect(() => {
         getConsultation(record.id).then((c) => {
             setDetail(c);
-            setOpinion(c.social_worker_opinion ?? '');
+            setTags(c.aiTags ?? []);
+            setOpinion(c.socialWorkerOpinion ?? '');
         }).catch(() => {});
-        getConsultationTags({ consultationId: record.id })
-            .then((list) => setTags(list.map((t) => t.tag)))
-            .catch(() => {});
     }, [record.id]);
 
     const handleSaveOpinion = async () => {
         if (saving) return;
         setSaving(true);
         try {
-            const updated = await updateConsultation(record.id, { social_worker_opinion: opinion });
+            const updated = await updateConsultation(record.id, { socialWorkerOpinion: opinion });
             setDetail(updated);
         } catch {
             // 저장 실패 시 기존 값 유지
@@ -79,12 +71,12 @@ function CounselingModal({ record, onClose }) {
 
                         <div className="cm-section">
                             <p className="cm-section-label">STT 변환 원문</p>
-                            <blockquote className="cm-quote">{detail?.stt_text ?? '-'}</blockquote>
+                            <blockquote className="cm-quote">{detail?.sttText ?? '-'}</blockquote>
                         </div>
 
                         <div className="cm-section">
                             <p className="cm-section-label">AI 상담 요약</p>
-                            <div className="cm-ai-box">{detail?.ai_summary ?? '-'}</div>
+                            <div className="cm-ai-box">{detail?.aiSummary ?? '-'}</div>
                         </div>
 
                         <div className="cm-section">
@@ -105,9 +97,9 @@ function CounselingModal({ record, onClose }) {
                         <div className="cm-section">
                             <div className="cm-review-top">
                                 <p className="cm-section-label">생활지원사 최종 검토 내용</p>
-                                {detail?.worker_final_note && <span className="cm-saved-badge">최종 저장 완료</span>}
+                                {detail?.workerFinalNote && <span className="cm-saved-badge">최종 저장 완료</span>}
                             </div>
-                            <div className="cm-text-box">{detail?.worker_final_note ?? '아직 작성되지 않았습니다.'}</div>
+                            <div className="cm-text-box">{detail?.workerFinalNote ?? '아직 작성되지 않았습니다.'}</div>
                         </div>
 
                         <div className="cm-section">
@@ -143,7 +135,7 @@ function CounselingModal({ record, onClose }) {
 
                 <div className="cm-footer">
                     <p className="cm-footer-meta">
-                        작성자: {record.manager} · 작성일: {formatDatetime(detail?.created_at)} · AI 요약 생성: {formatDatetime(detail?.processed_at)}
+                        작성자: {record.manager} · 상담일시: {record.datetime}
                     </p>
                     <div className="cm-footer-btns">
                         <button className="cm-btn cm-btn--outline">인쇄 / 내보내기</button>

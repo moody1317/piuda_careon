@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getInstitutionByCode } from '../../../../api/institutions';
+import { checkInstitution, signup } from '../../../../api/auth';
 import { ROLE_LABELS } from '../../../../api/users';
 import './Joinus.css';
 
@@ -69,6 +69,8 @@ function JoinUs() {
 
   const [role, setRole] = useState(null);
   const [agreedPrivacy, setAgreedPrivacy] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const pwCheck = {
     length: pw.length >= 8,
@@ -100,9 +102,9 @@ function JoinUs() {
 
     setVerifying(true);
     try {
-      const institution = await getInstitutionByCode(code);
+      const institution = await checkInstitution(code);
       setInstVerified(true);
-      setInstName(institution.name);
+      setInstName(institution.institutionName);
       setCodeError('');
     } catch {
       setInstVerified(false);
@@ -116,6 +118,28 @@ function JoinUs() {
   const canGoStep3 = name && phone && email &&
     Object.values(pwCheck).every(Boolean) &&
     pw === pwConfirm;
+
+  const handleSignup = async () => {
+    if (!role || !agreedPrivacy || submitting) return;
+    setSubmitting(true);
+    setSubmitError('');
+    try {
+      await signup({
+        institutionCode: instCode.trim().toUpperCase(),
+        name,
+        phone,
+        email,
+        password: pw,
+        role,
+        agreedTerms: agreedPrivacy,
+      });
+      goNext(3);
+    } catch (err) {
+      setSubmitError(err.message ?? '회원가입에 실패했습니다.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="jn-layout">
@@ -341,12 +365,13 @@ function JoinUs() {
                   </p>
                   <button
                     className={`jn-btn-primary flex-1${!role || !agreedPrivacy ? ' disabled' : ''}`}
-                    disabled={!role || !agreedPrivacy}
-                    onClick={() => role && agreedPrivacy && goNext(3)}
+                    disabled={!role || !agreedPrivacy || submitting}
+                    onClick={handleSignup}
                   >
-                    가입 완료 및 로그인
+                    {submitting ? '가입 처리 중...' : '가입 완료 및 로그인'}
                   </button>
                 </div>
+                {submitError && <p className="jn-error">{submitError}</p>}
               </div>
             )}
 

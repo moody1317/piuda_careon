@@ -4,7 +4,6 @@ import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
 import { getConsultations } from '../../../api/consultations';
-import { getConsultationTags } from '../../../api/consultationTags';
 import { getUsers } from '../../../api/users';
 import './Schedule.css';
 
@@ -29,22 +28,23 @@ function Schedule() {
     const [logs, setLogs] = useState([]);
 
     useEffect(() => {
-        // TODO: 로그인/세션 연동 후 실제 로그인한 생활지원사 id로 교체
+        // TODO: 로그인/세션 연동 후 실제 로그인한 생활지원사 이름으로 교체
         getUsers()
             .then((users) => users.find((u) => u.name === '김민지'))
-            .then((caregiver) => caregiver
-                ? Promise.all([getConsultations({ caregiverId: caregiver.id }), getConsultationTags()])
-                : [[], []])
-            .then(([list, tagList]) => {
-                setLogs(list.map((c) => ({
+            .then((caregiver) => caregiver ? getConsultations() : [])
+            .then((list) => {
+                const mine = list.filter((c) => c.caregiverName === '김민지');
+                setLogs(mine.map((c) => ({
                     id: c.id,
-                    initials: c.recipient_name.slice(0, 2),
-                    name: c.recipient_name,
-                    age: c.recipient_age,
-                    datetime: formatDatetime(c.consulted_at),
+                    initials: c.recipientName.slice(0, 2),
+                    name: c.recipientName,
+                    age: c.recipientAge,
+                    datetime: formatDatetime(c.consultedAt),
                     manager: '김민지',
-                    tags: tagList.filter((t) => t.consultation_id === c.id).map((t) => t.tag),
-                    status: c.worker_final_note ? 'done' : 'pending',
+                    tags: c.aiTags,
+                    // ConsultationResponse(목록)에는 workerFinalNote가 없어 작성완료 여부를
+                    // 판단할 수 없음. 백엔드에 필드 추가되면 여기서 반영.
+                    status: 'pending',
                 })));
             })
             .catch(() => {});

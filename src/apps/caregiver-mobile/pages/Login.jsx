@@ -2,16 +2,29 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.svg';
 import StatusBar from '../ui/StatusBar';
+import { login } from '../../../api/auth';
 import './Login.css';
 
 function Login() {
     const navigate = useNavigate();
     const [orgCode, setOrgCode] = useState('');
-    const [userId, setUserId] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleLogin = () => {
-        navigate('/home');
+    const handleLogin = async () => {
+        if (submitting) return;
+        setSubmitting(true);
+        setError('');
+        try {
+            await login({ institutionCode: orgCode, email, password });
+            navigate('/home');
+        } catch (err) {
+            setError(err.message ?? '로그인에 실패했습니다.');
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -36,13 +49,13 @@ function Login() {
                         />
                     </div>
                     <div className="cg-login-field">
-                        <label htmlFor="userId">아이디</label>
+                        <label htmlFor="email">이메일</label>
                         <input
-                            id="userId"
+                            id="email"
                             className="cg-login-input"
-                            placeholder="아이디"
-                            value={userId}
-                            onChange={(e) => setUserId(e.target.value)}
+                            placeholder="이메일 주소 입력"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </div>
                     <div className="cg-login-field">
@@ -57,7 +70,11 @@ function Login() {
                         />
                     </div>
 
-                    <button className="cg-login-button" onClick={handleLogin}>로그인</button>
+                    {error && <p className="cg-login-error">{error}</p>}
+
+                    <button className="cg-login-button" onClick={handleLogin} disabled={submitting}>
+                        {submitting ? '로그인 중...' : '로그인'}
+                    </button>
 
                     <div className="cg-login-notice">
                         <p className="cg-login-notice-title">

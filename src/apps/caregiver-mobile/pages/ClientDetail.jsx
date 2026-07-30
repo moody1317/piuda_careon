@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import StatusBar from '../ui/StatusBar';
 import PageHeader from '../ui/PageHeader';
 import BottomMenu from '../ui/BottomMenu';
-import { getClient } from '../../../api/clients';
+import { getClient, CARE_LEVEL_LABELS } from '../../../api/clients';
 import './ClientDetail.css';
 
 const DEFAULT_CLIENT = {
@@ -46,11 +46,11 @@ function ClientDetail() {
     const basicInfo = fullClient
         ? [
             { label: '주소', value: fullClient.address ?? '-' },
-            { label: '주요 질환', value: '고혈압, 당뇨' },
+            { label: '주요 질환', value: fullClient.mainDisease ?? '-' },
             { label: '연락처', value: fullClient.phone ?? '-' },
-            { label: '보호자명', value: fullClient.guardian_name ?? '-' },
-            { label: '보호자 연락처', value: fullClient.guardian_phone ?? '-' },
-            { label: '보호자 관계', value: fullClient.guardian_relation ?? '-' },
+            { label: '보호자명', value: fullClient.familyContactName ?? '-' },
+            { label: '보호자 연락처', value: fullClient.familyContactPhone ?? '-' },
+            { label: '보호자 관계', value: fullClient.familyRelation ?? '-' },
         ]
         : FALLBACK_BASIC_INFO;
 
@@ -68,7 +68,7 @@ function ClientDetail() {
                             {client.name} ({client.age}세 · {client.gender ?? DEFAULT_CLIENT.gender})
                         </p>
                         <p className="cg-cd-meta">
-                            돌봄 {client.careLevel ?? DEFAULT_CLIENT.careLevel} · 담당 {client.tenure ?? DEFAULT_CLIENT.tenure}
+                            돌봄 {fullClient?.careLevel ? CARE_LEVEL_LABELS[fullClient.careLevel] : (client.careLevel ?? DEFAULT_CLIENT.careLevel)} · 담당 {client.tenure ?? DEFAULT_CLIENT.tenure}
                         </p>
                     </div>
                 </div>

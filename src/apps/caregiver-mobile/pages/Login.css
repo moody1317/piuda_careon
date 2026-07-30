@@ -101,6 +101,11 @@
   filter: brightness(0.85);
 }
 
+.cg-login-error {
+  color: var(--alert);
+  font-size: var(--font-size-sm);
+}
+
 .cg-login-notice {
   background-color: var(--primaryLight);
   border-radius: var(--radius-field);

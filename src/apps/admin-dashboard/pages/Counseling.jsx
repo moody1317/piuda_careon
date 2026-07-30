@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import './Counseling.css';
 import CounselingModal from './CounselingModal';
 import { getConsultations } from '../../../api/consultations';
-import { getConsultationTags } from '../../../api/consultationTags';
-import { getUsers } from '../../../api/users';
 import { STATUS_LABELS } from '../../../api/status';
 
 function formatDatetime(isoString) {
@@ -28,18 +26,17 @@ function Counseling() {
     const [records, setRecords] = useState([]);
 
     useEffect(() => {
-        Promise.all([getConsultations(), getUsers(), getConsultationTags()])
-            .then(([list, userList, tagList]) => {
-                const userById = Object.fromEntries(userList.map((u) => [u.id, u]));
+        getConsultations()
+            .then((list) => {
                 setRecords(list.map((c) => ({
                     id: c.id,
-                    avatar: c.recipient_name.slice(0, 2),
-                    name: c.recipient_name,
-                    age: c.recipient_age,
-                    datetime: formatDatetime(c.consulted_at),
-                    manager: userById[c.caregiver_id]?.name ?? '',
-                    tags: tagList.filter((t) => t.consultation_id === c.id).map((t) => t.tag),
-                    summary: c.ai_summary_preview,
+                    avatar: c.recipientName.slice(0, 2),
+                    name: c.recipientName,
+                    age: c.recipientAge,
+                    datetime: formatDatetime(c.consultedAt),
+                    manager: c.caregiverName,
+                    tags: c.aiTags,
+                    summary: c.aiSummaryPreview,
                     status: c.status,
                 })));
             })

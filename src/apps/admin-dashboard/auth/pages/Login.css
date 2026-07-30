@@ -237,6 +237,11 @@
   filter: brightness(0.9);
 }
 
+.login-error {
+  color: var(--alert);
+  font-size: var(--font-size-sm);
+}
+
 .login-notice {
   background-color: var(--bgPage);
   border-left: 3px solid var(--primary);

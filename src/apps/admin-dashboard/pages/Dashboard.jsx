@@ -1,4 +1,16 @@
+import { useState, useEffect } from 'react';
 import './Dashboard.css';
+import { getDashboardSummary } from '../../../api/dashboard';
+
+const EMPTY_SUMMARY = {
+    totalConsultations: 0,
+    normalCount: 0,
+    needReviewCount: 0,
+    specialNoteCount: 0,
+    averageRiskScore: 0,
+    highRiskCount: 0,
+    topTags: [],
+};
 
 const RISK_ROWS = [
     { avatar: '박영', name: '박영희 (77세)', symptom: '식사거부 3주·우울감↑',   manager: '김민지', status: '긴급' },
@@ -7,15 +19,6 @@ const RISK_ROWS = [
     { avatar: '최옥', name: '최옥순 (75세)', symptom: '약 복용 불규칙',         manager: '이성희', status: '주의' },
     { avatar: '강순', name: '강순희 (81세)', symptom: '우울감 표현 증가',       manager: '박지수', status: '주의' },
     { avatar: '윤기', name: '윤기철 (85세)', symptom: '식욕 감소',              manager: '박지수', status: '주의' },
-];
-
-const TAG_ROWS = [
-    { label: '식사 거부',      count: 4, percent: 75, type: 'alert' },
-    { label: '수면 문제',      count: 3, percent: 58, type: 'warn'  },
-    { label: '우울감 표현',    count: 3, percent: 58, type: 'alert' },
-    { label: '반복 발화 증가', count: 2, percent: 38, type: 'alert' },
-    { label: '낙상 위험',      count: 1, percent: 20, type: 'warn'  },
-    { label: '약 복용 문제',   count: 1, percent: 20, type: 'warn'  },
 ];
 
 const WEEKS  = ['3/31', '4/7', '4/14', '4/21', '4/28', '5/5', '5/12', '5/19'];
@@ -80,29 +83,45 @@ function LineChart() {
 }
 
 function Dashboard() {
+    const [summary, setSummary] = useState(EMPTY_SUMMARY);
+
+    useEffect(() => {
+        getDashboardSummary().then(setSummary).catch(() => {});
+    }, []);
+
     return (
         <div className="dashboard">
 
             <div className="dashboard-stats">
                 <div className="stat-card">
-                    <p className="stat-label">총 대상자</p>
-                    <p className="stat-value stat-value--primary">142</p>
-                    <p className="stat-sub">전월 대비 +3명</p>
+                    <p className="stat-label">총 상담 건수</p>
+                    <p className="stat-value stat-value--primary">{summary.totalConsultations}</p>
+                    <p className="stat-sub">전체 상담일지 기준</p>
                 </div>
                 <div className="stat-card">
-                    <p className="stat-label">이번 주 위험군</p>
-                    <p className="stat-value stat-value--alert">8</p>
+                    <p className="stat-label">정상</p>
+                    <p className="stat-value stat-value--primary">{summary.normalCount}</p>
+                    <p className="stat-sub">정상 판정 상담일지</p>
+                </div>
+                <div className="stat-card">
+                    <p className="stat-label">검토필요</p>
+                    <p className="stat-value stat-value--warn">{summary.needReviewCount}</p>
+                    <p className="stat-sub">사회복지사 확인 필요</p>
+                </div>
+                <div className="stat-card">
+                    <p className="stat-label">특이사항</p>
+                    <p className="stat-value stat-value--alert">{summary.specialNoteCount}</p>
                     <p className="stat-sub">즉시 확인 필요</p>
                 </div>
                 <div className="stat-card">
-                    <p className="stat-label">이번 주 방문 완료</p>
-                    <p className="stat-value stat-value--primary">86%</p>
-                    <p className="stat-sub">122 / 142명</p>
+                    <p className="stat-label">평균 위험도 점수</p>
+                    <p className="stat-value stat-value--warn">{summary.averageRiskScore}</p>
+                    <p className="stat-sub">전체 평균 기준</p>
                 </div>
                 <div className="stat-card">
-                    <p className="stat-label">신규 특이사항 태그</p>
-                    <p className="stat-value stat-value--warn">14</p>
-                    <p className="stat-sub">오늘 기준</p>
+                    <p className="stat-label">고위험군</p>
+                    <p className="stat-value stat-value--alert">{summary.highRiskCount}</p>
+                    <p className="stat-sub">위험도 상위 대상자</p>
                 </div>
             </div>
 
@@ -146,19 +165,19 @@ function Dashboard() {
 
                 <div className="db-card">
                     <div className="card-header card-header--between">
-                        <span className="section-title">오늘의 특이사항 태그</span>
-                        <span className="muted-text">전체 14건</span>
+                        <span className="section-title">특이사항 태그 통계</span>
+                        <span className="muted-text">전체 {summary.specialNoteCount}건</span>
                     </div>
                     <div className="tag-list">
-                        {TAG_ROWS.map((row, i) => (
+                        {summary.topTags.map((row, i) => (
                             <div key={i} className="tag-row">
-                                <span className="tag-label">{row.label}</span>
-                                <span className={`tag-count tag-count--${row.type}`}>{row.count}건</span>
+                                <span className="tag-label">{row.tag}</span>
+                                <span className="tag-count tag-count--alert">{row.count}건</span>
                                 <div className="tag-bar-bg">
-                                    <div className={`tag-bar tag-bar--${row.type}`}
-                                        style={{ width: `${row.percent}%` }} />
+                                    <div className="tag-bar tag-bar--alert"
+                                        style={{ width: `${row.percentage}%` }} />
                                 </div>
-                                <span className="tag-percent">{row.percent}%</span>
+                                <span className="tag-percent">{row.percentage}%</span>
                             </div>
                         ))}
                     </div>
