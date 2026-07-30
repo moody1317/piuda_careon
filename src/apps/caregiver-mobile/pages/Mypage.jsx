@@ -104,7 +104,7 @@ function Mypage() {
                     ))}
                 </div>
 
-                <button className="cg-my-logout-button" type="button" onClick={() => { logout(); navigate('/login'); }}>
+                <button className="cg-my-logout-button" type="button" onClick={async () => { await logout(); navigate('/login'); }}>
                     로그아웃
                 </button>
             </div>

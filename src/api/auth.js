@@ -1,3 +1,4 @@
+import { SecureStoragePlugin } from 'capacitor-secure-storage-plugin';
 import { MOCK_USERS } from './users.mock';
 import { MOCK_INSTITUTIONS } from './institutions.mock';
 
@@ -29,24 +30,43 @@ function findInstitutionByCode(institutionCode) {
     );
 }
 
-export function getToken() {
-    return localStorage.getItem(TOKEN_KEY) ?? sessionStorage.getItem(TOKEN_KEY);
-}
+// "로그인 상태 유지" 체크 시엔 기기 재시작 후에도 남아야 하니 Android Keystore/iOS Keychain 기반
+// 암호화 저장소(SecureStoragePlugin)에 저장한다. 체크 해제 시엔 디스크에 아예 안 남기고
+// 메모리에만 들고 있어서 새로고침/앱 재시작하면 사라진다 (기존 sessionStorage 역할을 대체).
+let inMemoryToken = null;
 
-function setToken(token, persist = true) {
-    if (!token) return;
-    if (persist) {
-        localStorage.setItem(TOKEN_KEY, token);
-        sessionStorage.removeItem(TOKEN_KEY);
-    } else {
-        sessionStorage.setItem(TOKEN_KEY, token);
-        localStorage.removeItem(TOKEN_KEY);
+export async function getToken() {
+    if (inMemoryToken) return inMemoryToken;
+    try {
+        const { value } = await SecureStoragePlugin.get({ key: TOKEN_KEY });
+        return value;
+    } catch {
+        return null;
     }
 }
 
-export function logout() {
-    localStorage.removeItem(TOKEN_KEY);
-    sessionStorage.removeItem(TOKEN_KEY);
+async function setToken(token, persist = true) {
+    if (!token) return;
+    if (persist) {
+        inMemoryToken = null;
+        await SecureStoragePlugin.set({ key: TOKEN_KEY, value: token });
+    } else {
+        inMemoryToken = token;
+        try {
+            await SecureStoragePlugin.remove({ key: TOKEN_KEY });
+        } catch {
+            // 저장된 게 없으면 무시
+        }
+    }
+}
+
+export async function logout() {
+    inMemoryToken = null;
+    try {
+        await SecureStoragePlugin.remove({ key: TOKEN_KEY });
+    } catch {
+        // 이미 없으면 무시
+    }
 }
 
 // 기관 코드 확인
@@ -98,18 +118,18 @@ export function signup({ institutionCode, name, phone, email, password, role, ag
 }
 
 // 로그인
-export function login({ institutionCode, email, password }, persist = true) {
+export async function login({ institutionCode, email, password }, persist = true) {
     if (USE_MOCK) {
         const institution = findInstitutionByCode(institutionCode);
         const user = institution
             ? MOCK_USERS.find((u) => u.institutionId === institution.id && u.email === email)
             : null;
         if (!institution || !user || password !== MOCK_LOGIN_PASSWORD) {
-            return Promise.reject(new Error('기관 코드, 이메일 또는 비밀번호가 올바르지 않습니다.'));
+            throw new Error('기관 코드, 이메일 또는 비밀번호가 올바르지 않습니다.');
         }
         const accessToken = `mock-token:${user.id}`;
-        setToken(accessToken, persist);
-        return Promise.resolve({
+        await setToken(accessToken, persist);
+        return {
             accessToken,
             userId: user.id,
             name: user.name,
@@ -118,28 +138,27 @@ export function login({ institutionCode, email, password }, persist = true) {
             institutionId: institution.id,
             institutionCode: institution.code,
             institutionName: institution.name,
-        });
+        };
     }
-    return request('/auth/login', {
+    const res = await request('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ institutionCode, email, password }),
-    }).then((res) => {
-        setToken(res.accessToken, persist);
-        return res;
     });
+    await setToken(res.accessToken, persist);
+    return res;
 }
 
 // 내 정보 조회
-export function me() {
-    const token = getToken();
-    if (!token) return Promise.reject(new Error('로그인이 필요합니다.'));
+export async function me() {
+    const token = await getToken();
+    if (!token) throw new Error('로그인이 필요합니다.');
 
     if (USE_MOCK) {
         const userId = token.replace('mock-token:', '');
         const user = MOCK_USERS.find((u) => u.id === userId);
-        if (!user) return Promise.reject(new Error('로그인이 필요합니다.'));
+        if (!user) throw new Error('로그인이 필요합니다.');
         const institution = MOCK_INSTITUTIONS.find((inst) => inst.id === user.institutionId);
-        return Promise.resolve({
+        return {
             userId: user.id,
             name: user.name,
             email: user.email,
@@ -147,7 +166,7 @@ export function me() {
             institutionId: institution?.id,
             institutionCode: institution?.code,
             institutionName: institution?.name,
-        });
+        };
     }
     return request('/auth/me', {
         headers: { Authorization: `Bearer ${token}` },

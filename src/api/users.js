@@ -13,7 +13,7 @@ export const ROLE_LABELS = {
 };
 
 async function request(path, options = {}) {
-    const token = getToken();
+    const token = await getToken();
     const res = await fetch(`${API_BASE_URL}${path}`, {
         headers: {
             'Content-Type': 'application/json',

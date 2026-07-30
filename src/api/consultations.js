@@ -7,7 +7,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '/api';
 const USE_MOCK = true;
 
 async function request(path, options = {}) {
-    const token = getToken();
+    const token = await getToken();
     const res = await fetch(`${API_BASE_URL}${path}`, {
         headers: {
             'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ export function createConsultation({ recipientName, recipientAge, caregiverId, c
 }
 
 // 녹음 파일 업로드
-export function uploadAudio(id, file) {
+export async function uploadAudio(id, file) {
     if (USE_MOCK) {
         const consultation = MOCK_CONSULTATIONS.find(c => c.id === id);
         if (!consultation) return Promise.reject(new Error('상담일지를 찾을 수 없습니다.'));
@@ -85,19 +85,18 @@ export function uploadAudio(id, file) {
     }
     const formData = new FormData();
     formData.append('file', file);
-    return fetch(`${API_BASE_URL}/consultations/${id}/audio`, {
+    const token = await getToken();
+    const res = await fetch(`${API_BASE_URL}/consultations/${id}/audio`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${getToken()}` },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
-    })
-        .then((res) => {
-            if (!res.ok) throw new Error(`녹음 업로드 실패 (${res.status})`);
-            return res.json();
-        });
+    });
+    if (!res.ok) throw new Error(`녹음 업로드 실패 (${res.status})`);
+    return res.json();
 }
 
 // 방문 상담 녹음 → STT/LLM 일괄 처리
-export function processConsultation({ caregiverId, recipientId, consultedAt, file }) {
+export async function processConsultation({ caregiverId, recipientId, consultedAt, file }) {
     if (USE_MOCK) {
         const consultation = {
             id: String(Date.now()),
@@ -124,15 +123,14 @@ export function processConsultation({ caregiverId, recipientId, consultedAt, fil
     formData.append('recipientId', recipientId);
     formData.append('consultedAt', consultedAt);
     formData.append('file', file);
-    return fetch(`${API_BASE_URL}/consultations/process`, {
+    const token = await getToken();
+    const res = await fetch(`${API_BASE_URL}/consultations/process`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${getToken()}` },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
-    })
-        .then((res) => {
-            if (!res.ok) throw new Error(`상담 처리 요청 실패 (${res.status})`);
-            return res.json();
-        });
+    });
+    if (!res.ok) throw new Error(`상담 처리 요청 실패 (${res.status})`);
+    return res.json();
 }
 
 // 생활지원사 최종 메모 / 사회복지사 소견 저장용 함수.
